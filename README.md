@@ -7,7 +7,7 @@ This project tests a hypothesis about information markets:
 when CNN, RT, Al Jazeera and BBC diverge sharply on the same geopolitical event,
 does that divergence signal market uncertainty before prices move?
 
-Built on top of [PressLens](https://github.com/yourname/presslens-media-bias-analyzer) —
+Built on top of [PressLens](https://https://github.com/Zhenna/presslens-media-bias-analyzer) —
 a multi-outlet media bias analyzer. This repo handles the data pipeline,
 market data, correlation analysis, and visualisation. No LLM code is duplicated.
 
@@ -72,7 +72,7 @@ See [docs/architecture.md](docs/architecture.md) for full design notes.
 ## Quick start
 
 ```bash
-git clone https://github.com/yourname/geopolitical-media-market-signals
+git clone https://github.com/Zhenna/media-divergence-oil-price-signal
 cd geopolitical-media-market-signals
 
 python -m venv .venv
@@ -140,7 +140,7 @@ See PressLens limitations for full detail.
 
 ## Related
 
-- [PressLens](https://github.com/yourname/presslens-media-bias-analyzer) — the bias scoring engine this project consumes
+- [PressLens](https://https://github.com/Zhenna/presslens-media-bias-analyzer) — the bias scoring engine this project consumes
 - [Blog post](https://medium.com/@luzhenna) — technical writeup
 
 ---
