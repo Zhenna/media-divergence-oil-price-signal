@@ -25,8 +25,19 @@ class Settings(BaseSettings):
     significance_threshold: float = 0.05
     exploratory_significance_threshold: float = 0.01
 
+    # MLflow (DagsHub)
+    mlflow_tracking_uri: str = ""
+    mlflow_tracking_username: str = ""
+    mlflow_tracking_password: str = ""
+
+    # LangSmith
+    langchain_tracing_v2: str = "false"
+    langchain_api_key: str = ""
+    langchain_project: str = "media-divergence-oil-price-signal"
+
     class Config:
         env_file = ".env"
+        extra = "ignore"    # silently ignore any other env vars not listed above
 
 
 settings = Settings()
