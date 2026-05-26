@@ -35,11 +35,12 @@ class Settings(BaseSettings):
     langchain_api_key: str = ""
     langchain_project: str = "media-divergence-oil-price-signal"
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False    
-        extra = "ignore"
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": False,
+        "extra": "ignore",
+    }
 
 
 settings = Settings()
