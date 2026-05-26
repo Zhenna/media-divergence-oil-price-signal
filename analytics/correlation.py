@@ -126,7 +126,9 @@ def find_best_correlation(
         r for r in correlations
         if r.is_significant and (market_symbol is None or r.market_symbol == market_symbol)
     ]
-    return filtered[0] if filtered else None
+    if not filtered:
+        return None
+    return max(filtered, key=lambda r: abs(r.pearson_r))
 
 
 def polarization_vs_sentiment_comparison(
