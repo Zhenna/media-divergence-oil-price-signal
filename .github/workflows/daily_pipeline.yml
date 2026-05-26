@@ -26,13 +26,13 @@ jobs:
       - name: Run tests
         run: pytest tests/ -v --tb=short
 
-      - name: Debug secrets
-        run: |
-          echo "OPENAI_API_KEY length: ${#OPENAI_API_KEY}"
-          echo "DATABASE_URL length: ${#DATABASE_URL}"
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # - name: Debug secrets
+      #   run: |
+      #     echo "OPENAI_API_KEY length: ${#OPENAI_API_KEY}"
+      #     echo "DATABASE_URL length: ${#DATABASE_URL}"
+      #   env:
+      #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run pipeline
         if: success()

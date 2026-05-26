@@ -5,25 +5,28 @@ Fetches Iran US Conflict coverage from GDELT for 6 tracked outlets,
 2020-01-01 to present. Uses Google BigQuery free tier (1TB/month).
 
 Prerequisites:
-    1. Google Cloud account (free)
-    2. BigQuery API enabled
-    3. pip install google-cloud-bigquery
+    1. Google Cloud account (free) at console.cloud.google.com
+    2. Create a project → enable BigQuery API
+    3. Create service account → download JSON key
+    4. pip install google-cloud-bigquery
 
 Usage:
+    export GOOGLE_APPLICATION_CREDENTIALS="/path/to/key.json"
+    export DATABASE_URL="postgresql://..."
     python scripts/backfill_gdelt.py
+
+Expected output:
+    Got 1,200+ rows from GDELT
+    Storing 1,200+ historical snapshots...
+    Done — date range: 2020-01-02 to 2025-05-26
+    Outlets: {'rt', 'aljazeera', 'cgtn', 'reuters', 'bbc', 'nyt'}
 
 GDELT tone scores are cruder than PressLens 6-dimension scoring
 but sufficient for historical baseline correlation analysis.
-The two methods are compared directly for overlapping periods.
+Stored with data_source='gdelt' to distinguish from live PressLens data.
 
-Outlet name mapping (GDELT SourceCommonName → our outlet IDs):
-    rt.com          → rt
-    aljazeera.com   → aljazeera
-    cgtn.com        → cgtn
-    reuters.com     → reuters
-    bbc.co.uk       → bbc
-    bbc.com         → bbc
-    nytimes.com     → nyt
+Note: After running this, hypothesis correlations compute immediately
+using 4+ years of historical data rather than waiting 90 days.
 """
 import asyncio
 import sys
@@ -101,6 +104,10 @@ async def run_bigquery_backfill():
     rows = list(query_job.result())
     print(f"Got {len(rows)} rows from GDELT")
 
+    if not rows:
+        print("No data returned. Check your Google Cloud credentials and query.")
+        sys.exit(1)
+
     snapshots = []
     for row in rows:
         outlet_id = OUTLET_MAP.get(row.source)
@@ -108,7 +115,10 @@ async def run_bigquery_backfill():
             continue
 
         score = tone_to_score(row.mean_tone or 0)
-        scored_at = datetime.combine(row.scored_date, datetime.min.time()).replace(tzinfo=timezone.utc)
+        scored_at = datetime.combine(
+            row.scored_date,
+            datetime.min.time()
+        ).replace(tzinfo=timezone.utc)
 
         snapshots.append(BiasSnapshot(
             topic="Iran US Conflict",
@@ -120,22 +130,25 @@ async def run_bigquery_backfill():
             source_selection=score,
             loaded_language=score,
             political_stance=score,
-            factual_density=max(1, 11 - score),  # inverse: high bias = low factual density
+            factual_density=max(1, 11 - score),
             overall=score,
             sentiment="Historical",
-            verdict=f"GDELT tone score: {row.mean_tone:.2f} ({row.article_count} articles)",
+            verdict=f"GDELT tone: {row.mean_tone:.2f} ({row.article_count} articles)",
             data_source="gdelt",
         ))
 
     if not snapshots:
-        print("No snapshots created — check outlet mapping and query results")
+        print("No snapshots created — check outlet mapping")
         sys.exit(1)
 
     print(f"Storing {len(snapshots)} historical snapshots...")
     await store_bias_snapshots(snapshots)
-    print(f"Done — {len(snapshots)} GDELT records stored")
-    print(f"Date range: {min(s.scored_at for s in snapshots).date()} to {max(s.scored_at for s in snapshots).date()}")
+
+    print(f"\nDone — {len(snapshots)} GDELT records stored")
+    print(f"Date range: {min(s.scored_at for s in snapshots).date()} "
+          f"to {max(s.scored_at for s in snapshots).date()}")
     print(f"Outlets: {set(s.outlet_id for s in snapshots)}")
+    print("\nCorrelations will now compute using full historical dataset.")
 
 
 async def main():

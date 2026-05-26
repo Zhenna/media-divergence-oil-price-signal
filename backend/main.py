@@ -1,9 +1,12 @@
 """
 FastAPI entry point.
 
-Starts the APScheduler pipeline on app startup.
-Serves the analytics dashboard frontend.
+Starts the APScheduler pipeline on app startup UNLESS
+DISABLE_SCHEDULER=true is set (used on Railway where
+GitHub Actions handles the pipeline instead).
 """
+import os
+import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -13,22 +16,24 @@ from fastapi.responses import FileResponse
 
 from backend.api.routes import router
 from backend.services.db import init_db
-from pipeline.scheduler import start_scheduler, run_pipeline
 
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend" / "src"
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialise database
+    # Initialise database tables
     init_db()
 
-    # Start scheduled pipeline
-    start_scheduler()
-
-    # Run pipeline once immediately on startup to populate data
-    import asyncio
-    asyncio.create_task(run_pipeline())
+    # Only start scheduler if not disabled
+    # Set DISABLE_SCHEDULER=true on Railway — GitHub Actions handles the pipeline
+    if not os.environ.get("DISABLE_SCHEDULER", "").lower() in ("true", "1", "yes"):
+        from pipeline.scheduler import start_scheduler
+        from pipeline.scheduler import run_pipeline
+        start_scheduler()
+        asyncio.create_task(run_pipeline())
+    else:
+        print("[Scheduler] Disabled — pipeline managed by GitHub Actions")
 
     yield
 
