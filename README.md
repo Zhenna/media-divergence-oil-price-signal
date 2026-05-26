@@ -2,7 +2,7 @@
 
 > When RT and Al Jazeera tell a different story from Reuters and BBC, does oil move? A data pipeline that measures narrative divergence across global press and correlates it with WTI crude prices — daily, automated, statistically tested.
 
-**Live demo:** [railway-url](https://media-divergence-oil-price-signal-production.up.railway.app/)
+**Live demo:** [media-divergence-oil-price-signal-production.up.railway.app](https://media-divergence-oil-price-signal-production.up.railway.app/)
 **Built on top of:** [PressLens](https://github.com/zhenna/presslens-media-bias-analyzer) — no LLM code duplicated.
 
 ---
@@ -108,10 +108,13 @@ feature store (no model training).
 **Phase 1 (first 90 days):** daily at 22:00 UTC
 **Phase 2 (90+ days):** weekly, every Monday 22:00 UTC
 
-To switch — no code change needed:
+To switch:
 ```bash
-# In railway.toml startCommand, change cron reference
-# Rename .github/workflows/daily_pipeline.yml → .disabled
+# Rename daily workflow
+git mv .github/workflows/daily_pipeline.yml .github/workflows/daily_pipeline.yml.disabled
+# Update cadence in railway.toml
+# PIPELINE_CADENCE = "weekly"
+git add . && git commit -m "switch to weekly pipeline" && git push
 ```
 
 ---
@@ -126,7 +129,6 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 cp .env.example .env          # fill in your keys
-cp railway.toml.example railway.toml   # fill in for Railway deploy
 
 # One-time historical backfill
 python scripts/backfill_prices.py      # WTI + Brent 2020–present
@@ -155,9 +157,7 @@ uvicorn backend.main:app --reload
 
 See [DEPLOY.md](DEPLOY.md) for full Railway deployment instructions.
 
-**Note:** `railway.toml` is gitignored — it contains your API key inline
-due to a Railway Beta Runtime V2 variable injection bug.
-Copy `railway.toml.example` → `railway.toml` and fill in your values.
+All secrets are managed via GitHub Actions secrets — no secrets in code.
 
 ---
 

@@ -4,7 +4,7 @@ PressLens API client.
 This project does not duplicate PressLens source code.
 All bias scoring is delegated to the deployed PressLens API.
 
-PressLens repo: https://github.com/yourname/presslens-media-bias-analyzer
+PressLens repo: https://github.com/zhenna/presslens-media-bias-analyzer
 """
 from __future__ import annotations
 
@@ -25,7 +25,6 @@ async def fetch_bias_scores(
     Returns: (snapshots, consensus_fact_count, key_divergence)
     """
     api_key = os.environ.get("OPENAI_API_KEY", "").strip()
-    print(f"[PressLens] api_key resolved: length={len(api_key)}")
 
     async with httpx.AsyncClient(timeout=60) as client:
         res = await client.post(
@@ -42,7 +41,6 @@ async def fetch_bias_scores(
             print(f"[PressLens] Error {res.status_code}: {res.text[:300]}")
         res.raise_for_status()
         data = res.json()
-        print(f"[PressLens] Response: {len(data.get('results', []))} results received")
 
     snapshots = []
     now = datetime.now(timezone.utc)
