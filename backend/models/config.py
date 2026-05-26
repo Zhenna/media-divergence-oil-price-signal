@@ -4,6 +4,7 @@ All tracked topics, market symbols, and hypotheses defined here.
 """
 from pydantic_settings import BaseSettings
 from typing import Literal
+import os
 
 
 class Settings(BaseSettings):
@@ -44,6 +45,13 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# pydantic-settings v2 env var loading is unreliable in some Railway configs
+# Read critical vars directly from os.environ as fallback
+if not settings.presslens_api_key:
+    settings.presslens_api_key = os.environ.get("PRESSLENS_API_KEY", "")
+if not settings.presslens_url:
+    settings.presslens_url = os.environ.get("PRESSLENS_URL", "https://presslens-production-3f0c.up.railway.app")
 
 
 # ── Tracked topics ─────────────────────────────────────────────────────────────
