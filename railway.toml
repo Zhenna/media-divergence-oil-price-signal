@@ -6,3 +6,7 @@ startCommand = "/bin/sh -c 'uvicorn backend.main:app --host 0.0.0.0 --port $PORT
 healthcheckPath = "/api/topics"
 healthcheckTimeout = 30
 restartPolicyType = "on_failure"
+
+[environment]
+PRESSLENS_PROVIDER = "openai"
+PIPELINE_CADENCE = "daily"
