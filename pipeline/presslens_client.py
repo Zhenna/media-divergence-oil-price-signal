@@ -17,8 +17,10 @@ from backend.models.config import settings, TRACKED_TOPICS
 
 
 async def fetch_bias_scores(topic, outlet_ids):
-    api_key = os.environ.get("PRESSLENS_API_KEY", "")
-    print(f"[DEBUG] api_key from os.environ: length={len(api_key)}")
+    api_key = os.environ.get("PRESSLENS_API_KEY", "").strip().replace("\n", "").replace("\r", "")
+    print(f"[DEBUG] api_key from os.environ: length={len(api_key)}, stripped")
+    # api_key = os.environ.get("PRESSLENS_API_KEY", "")
+    # print(f"[DEBUG] api_key from os.environ: length={len(api_key)}")
     
     async with httpx.AsyncClient(timeout=60) as client:
         res = await client.post(
