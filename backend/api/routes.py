@@ -1,24 +1,17 @@
 """
 FastAPI routes for the analytics dashboard.
-
-Endpoints:
-    GET /api/topics          — list tracked topics
-    GET /api/markets         — list tracked market symbols
-    GET /api/dashboard/{topic}/{symbol}  — full dashboard data
-    GET /api/correlations/{topic}        — all correlations for a topic
-    GET /api/timeseries/{topic}/{symbol} — dual time series for chart
-    GET /api/hypothesis/{topic}          — polarization vs sentiment comparison
-    POST /api/pipeline/run               — manual pipeline trigger
 """
 from fastapi import APIRouter, HTTPException, BackgroundTasks
+import os
 
-from backend.models.config import TRACKED_TOPICS, MARKET_SYMBOLS
+from backend.models.config import TRACKED_TOPICS, MARKET_SYMBOLS, HYPOTHESES
 from backend.models.schemas import DashboardData, TimeSeriesPoint
 from backend.services.db import (
     get_polarization_records,
     get_price_records,
     get_bias_records,
     get_best_correlations,
+    get_latest_hypothesis_results,
 )
 from analytics.correlation import (
     compute_all_correlations,
@@ -34,13 +27,12 @@ router = APIRouter()
 @router.get("/debug/env")
 async def debug_env():
     """Temporary — remove after confirming pipeline works."""
-    import os
     from backend.models.config import settings
-    # Show length of every env var to find what Railway is injecting
-    all_vars = {k: len(v) for k, v in os.environ.items()}
     return {
-        "all_var_lengths": all_vars,
+        "OPENAI_API_KEY_length": len(os.environ.get("OPENAI_API_KEY", "")),
+        "provider": settings.presslens_provider,
         "pipeline_cadence": settings.pipeline_cadence,
+        "presslens_url": settings.presslens_url,
     }
 
 
@@ -56,21 +48,17 @@ async def list_markets():
 
 @router.get("/correlations/{topic}")
 async def get_correlations(topic: str):
-    """Return top significant correlations for a topic."""
     correlations = await get_best_correlations(topic)
     if not correlations:
-        raise HTTPException(status_code=404, detail=f"No correlations yet for '{topic}'. Run the pipeline first.")
+        raise HTTPException(
+            status_code=404,
+            detail=f"No correlations yet for '{topic}'. Need {14} days minimum."
+        )
     return correlations
 
 
 @router.get("/timeseries/{topic}/{symbol}")
 async def get_timeseries(topic: str, symbol: str, days: int = 90):
-    """
-    Return dual time series for chart overlay:
-    - polarization std_dev (overall dimension)
-    - market closing price
-    Both indexed by date.
-    """
     pol_records = await get_polarization_records(topic, days=days)
     price_records = await get_price_records(symbols=[symbol], days=days)
 
@@ -80,14 +68,12 @@ async def get_timeseries(topic: str, symbol: str, days: int = 90):
         raise HTTPException(status_code=404, detail=f"No price data for '{symbol}'")
 
     pol_series = polarization_to_series(pol_records, dimension="overall")
-    price_df = prices_to_dataframe([])  # use records directly
     import pandas as pd
     price_series = pd.Series(
         {r["price_date"]: r["close_price"] for r in price_records}
     )
     price_series.index = pd.to_datetime(price_series.index)
 
-    # Merge on date
     all_dates = sorted(set(pol_series.index) | set(price_series.index))
     points = []
     for d in all_dates:
@@ -107,10 +93,6 @@ async def get_timeseries(topic: str, symbol: str, days: int = 90):
 
 @router.get("/hypothesis/{topic}")
 async def test_hypothesis(topic: str):
-    """
-    The core hypothesis endpoint.
-    Returns: does polarization predict VIX better than mean sentiment?
-    """
     pol_records = await get_polarization_records(topic)
     sentiment_records = await get_bias_records(topic)
     price_records = await get_price_records(symbols=["^VIX"])
@@ -139,48 +121,12 @@ async def test_hypothesis(topic: str):
         "supported": hypothesis_supported,
         "polarization_correlation": pol_r.model_dump() if pol_r else None,
         "sentiment_correlation": sent_r.model_dump() if sent_r else None,
-        "verdict": _hypothesis_verdict(pol_r, sent_r, hypothesis_supported),
     }
-
-
-@router.post("/pipeline/run")
-async def trigger_pipeline(background_tasks: BackgroundTasks):
-    """Manually trigger a pipeline run. Runs in background."""
-    from pipeline.scheduler import run_pipeline
-    background_tasks.add_task(run_pipeline)
-    return {"message": "Pipeline triggered. Check logs for progress."}
-
-
-def _hypothesis_verdict(pol_r, sent_r, supported: bool) -> str:
-    if not pol_r or not sent_r:
-        return "Insufficient data to test hypothesis yet."
-    if supported:
-        return (
-            f"Hypothesis supported. Polarization (r={pol_r.pearson_r}, "
-            f"lag={pol_r.lag_days}d) correlates with VIX more strongly than "
-            f"mean sentiment (r={sent_r.pearson_r}), "
-            f"suggesting narrative divergence is a better uncertainty signal."
-        )
-    else:
-        return (
-            f"Hypothesis not yet supported. Mean sentiment (r={sent_r.pearson_r}) "
-            f"correlates with VIX as strongly as polarization (r={pol_r.pearson_r if pol_r else 'N/A'}). "
-            f"More data may change this result."
-        )
 
 
 @router.get("/hypotheses")
 async def get_all_hypothesis_results():
-    """
-    Return the latest test result for all 5 hypotheses.
-    Used for the hypothesis dashboard cards.
-    """
-    from backend.services.db import get_latest_hypothesis_results
-    from backend.models.config import HYPOTHESES
-
     results = await get_latest_hypothesis_results()
-
-    # Merge with hypothesis config for full context
     results_by_id = {r["hypothesis_id"]: r for r in results}
     output = []
     for h_id, h_config in HYPOTHESES.items():
@@ -205,5 +151,11 @@ async def get_all_hypothesis_results():
             "verdict": stored.get("verdict", f"Accumulating data. Need {14} days minimum."),
             "tested_at": stored.get("tested_at"),
         })
-
     return output
+
+
+@router.post("/pipeline/run")
+async def trigger_pipeline(background_tasks: BackgroundTasks):
+    from pipeline.scheduler import run_pipeline
+    background_tasks.add_task(run_pipeline)
+    return {"message": "Pipeline triggered. Check logs for progress."}

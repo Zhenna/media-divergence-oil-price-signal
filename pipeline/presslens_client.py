@@ -24,13 +24,7 @@ async def fetch_bias_scores(
     Call PressLens /api/analyze.
     Returns: (snapshots, consensus_fact_count, key_divergence)
     """
-    # Try multiple env var names — Railway dashboard var injection
-    # is unreliable in some configurations
-    api_key = (
-        os.environ.get("PRESSLENS_API_KEY", "").strip() or
-        os.environ.get("OPENAI_API_KEY", "").strip() or
-        os.environ.get("OPENAI_KEY", "").strip()
-    )
+    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
     print(f"[PressLens] api_key resolved: length={len(api_key)}")
 
     async with httpx.AsyncClient(timeout=60) as client:
@@ -44,8 +38,11 @@ async def fetch_bias_scores(
                 "time_range_days": 7,
             },
         )
+        if res.status_code != 200:
+            print(f"[PressLens] Error {res.status_code}: {res.text[:300]}")
         res.raise_for_status()
         data = res.json()
+        print(f"[PressLens] Response: {len(data.get('results', []))} results received")
 
     snapshots = []
     now = datetime.now(timezone.utc)
