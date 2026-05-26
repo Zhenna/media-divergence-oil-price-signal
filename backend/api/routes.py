@@ -36,11 +36,10 @@ async def debug_env():
     """Temporary — remove after confirming pipeline works."""
     import os
     from backend.models.config import settings
+    # Show length of every env var to find what Railway is injecting
+    all_vars = {k: len(v) for k, v in os.environ.items()}
     return {
-        "PRESSLENS_API_KEY_length": len(os.environ.get("PRESSLENS_API_KEY", "")),
-        "OPENAI_API_KEY_length": len(os.environ.get("OPENAI_API_KEY", "")),
-        "OPENAI_KEY_length": len(os.environ.get("OPENAI_KEY", "")),
-        "provider": settings.presslens_provider,
+        "all_var_lengths": all_vars,
         "pipeline_cadence": settings.pipeline_cadence,
     }
 
