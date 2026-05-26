@@ -16,12 +16,16 @@ from backend.models.schemas import BiasSnapshot
 from backend.models.config import settings, TRACKED_TOPICS
 
 
-async def fetch_bias_scores(topic, outlet_ids):
-    api_key = os.environ.get("PRESSLENS_API_KEY", "").strip().replace("\n", "").replace("\r", "")
-    print(f"[DEBUG] api_key from os.environ: length={len(api_key)}, stripped")
-    # api_key = os.environ.get("PRESSLENS_API_KEY", "")
-    # print(f"[DEBUG] api_key from os.environ: length={len(api_key)}")
-    
+async def fetch_bias_scores(
+    topic: str,
+    outlet_ids: list[str],
+) -> tuple[list[BiasSnapshot], int, str]:
+    """
+    Call PressLens /api/analyze.
+    Returns: (snapshots, consensus_fact_count, key_divergence)
+    """
+    api_key = os.environ.get("PRESSLENS_API_KEY", "").strip()
+
     async with httpx.AsyncClient(timeout=60) as client:
         res = await client.post(
             f"{settings.presslens_url}/api/analyze",
@@ -33,11 +37,7 @@ async def fetch_bias_scores(topic, outlet_ids):
                 "time_range_days": 7,
             },
         )
-        if res.status_code != 200:
-            print(f"[PressLens DEBUG] Status: {res.status_code}")
-            print(f"[PressLens DEBUG] Response body: {res.text}")
-            print(f"[PressLens DEBUG] api_key sent: length={len(settings.presslens_api_key)} prefix={settings.presslens_api_key[:8] if settings.presslens_api_key else 'EMPTY'}")
-            res.raise_for_status()
+        res.raise_for_status()
         data = res.json()
 
     snapshots = []
@@ -85,7 +85,6 @@ async def fetch_all_tracked_topics() -> list[BiasSnapshot]:
         try:
             snapshots, fact_count, divergence = await fetch_bias_scores(topic, outlet_ids)
             all_snapshots.extend(snapshots)
-            # Store consensus fact count for H3
             if snapshots:
                 await store_consensus_facts(topic, fact_count, divergence)
             print(f"[PressLens] {topic}: {len(snapshots)} outlets, {fact_count} consensus facts")

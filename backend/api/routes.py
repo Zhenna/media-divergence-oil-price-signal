@@ -33,17 +33,14 @@ router = APIRouter()
 
 @router.get("/debug/env")
 async def debug_env():
-    """Temporary debug endpoint — remove after fixing."""
+    """Temporary — remove after confirming pipeline works."""
     import os
     from backend.models.config import settings
-    # Dump ALL env var names so we can find the exact name Railway is using
-    all_names = sorted(os.environ.keys())
-    press_related = {k: os.environ[k][:12]+"..." for k in all_names if "PRESS" in k.upper() or "API" in k.upper()}
     return {
-        "api_key_length": len(settings.presslens_api_key),
-        "raw_from_os": os.environ.get("PRESSLENS_API_KEY", "NOT_FOUND")[:8],
-        "press_related_vars": press_related,
-        "all_var_names": all_names,
+        "api_key_length": len(os.environ.get("PRESSLENS_API_KEY", "")),
+        "api_key_prefix": os.environ.get("PRESSLENS_API_KEY", "EMPTY")[:8],
+        "provider": settings.presslens_provider,
+        "pipeline_cadence": settings.pipeline_cadence,
     }
 
 
