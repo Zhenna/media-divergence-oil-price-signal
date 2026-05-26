@@ -2,13 +2,15 @@ name: Daily Pipeline
 
 on:
   schedule:
-    - cron: '0 22 * * *'   # 22:00 UTC daily — 1h after US market close
-  workflow_dispatch:        # manual trigger for testing
+    - cron: '0 22 * * *'
+  workflow_dispatch:
 
 jobs:
   run:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +25,14 @@ jobs:
 
       - name: Run tests
         run: pytest tests/ -v --tb=short
+
+      - name: Debug secrets
+        run: |
+          echo "OPENAI_API_KEY length: ${#OPENAI_API_KEY}"
+          echo "DATABASE_URL length: ${#DATABASE_URL}"
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run pipeline
         if: success()
