@@ -24,16 +24,16 @@ from pipeline.price_fetcher import prices_to_dataframe
 router = APIRouter()
 
 
-@router.get("/debug/env")
-async def debug_env():
-    """Temporary — remove after confirming pipeline works."""
-    from backend.models.config import settings
-    return {
-        "OPENAI_API_KEY_length": len(os.environ.get("OPENAI_API_KEY", "")),
-        "provider": settings.presslens_provider,
-        "pipeline_cadence": settings.pipeline_cadence,
-        "presslens_url": settings.presslens_url,
-    }
+# @router.get("/debug/env")
+# async def debug_env():
+#     """Temporary — remove after confirming pipeline works."""
+#     from backend.models.config import settings
+#     return {
+#         "OPENAI_API_KEY_length": len(os.environ.get("OPENAI_API_KEY", "")),
+#         "provider": settings.presslens_provider,
+#         "pipeline_cadence": settings.pipeline_cadence,
+#         "presslens_url": settings.presslens_url,
+#     }
 
 
 @router.get("/topics")
