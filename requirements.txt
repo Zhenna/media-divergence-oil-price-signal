@@ -9,7 +9,7 @@ httpx==0.27.0
 apscheduler==3.10.4
 
 # Market data
-yfinance==1.4.0
+yfinance==0.2.40
 pandas==2.2.2
 numpy==1.26.4
 

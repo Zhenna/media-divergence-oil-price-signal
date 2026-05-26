@@ -92,47 +92,21 @@ async def store_bias_snapshots(snapshots: list[BiasSnapshot]) -> None:
         session.commit()
 
 
-# async def store_prices(prices: list[MarketPrice]) -> None:
-#     with Session(engine) as session:
-#         for p in prices:
-#             # Upsert by symbol + date
-#             existing = session.exec(
-#                 select(MarketPriceDB).where(
-#                     MarketPriceDB.symbol == p.symbol,
-#                     MarketPriceDB.price_date == str(p.price_date),
-#                 )
-#             ).first()
-#             if not existing:
-#                 data = p.model_dump()
-#                 data["price_date"] = str(data["price_date"])
-#                 session.add(MarketPriceDB(**data))
-#         session.commit()
-
 async def store_prices(prices: list[MarketPrice]) -> None:
     with Session(engine) as session:
-        # Bulk insert — much faster than row-by-row for historical backfill
-        existing = set(
-            session.exec(
-                select(MarketPriceDB.symbol, MarketPriceDB.price_date)
-            ).all()
-        )
-        new_rows = [
-            MarketPriceDB(
-                symbol=p.symbol,
-                name=p.name,
-                price_date=str(p.price_date),
-                close_price=p.close_price,
-                volume=p.volume,
-            )
-            for p in prices
-            if (p.symbol, str(p.price_date)) not in existing
-        ]
-        if new_rows:
-            session.bulk_save_objects(new_rows)
-            session.commit()
-            print(f"[DB] Stored {len(new_rows)} new price records")
-        else:
-            print("[DB] No new price records to store")
+        for p in prices:
+            # Upsert by symbol + date
+            existing = session.exec(
+                select(MarketPriceDB).where(
+                    MarketPriceDB.symbol == p.symbol,
+                    MarketPriceDB.price_date == str(p.price_date),
+                )
+            ).first()
+            if not existing:
+                data = p.model_dump()
+                data["price_date"] = str(data["price_date"])
+                session.add(MarketPriceDB(**data))
+        session.commit()
 
 
 async def store_polarization(scores: list[PolarizationScore]) -> None:

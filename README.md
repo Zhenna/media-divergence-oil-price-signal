@@ -2,8 +2,8 @@
 
 > When RT and Al Jazeera tell a different story from Reuters and BBC, does oil move? A data pipeline that measures narrative divergence across global press and correlates it with WTI crude prices — daily, automated, statistically tested.
 
-Live demo: **[TBC-railway-url]**
-Built on top of: [PressLens](https://github.com/zhenna/presslens-media-bias-analyzer)
+Live demo: **[your-railway-url]**
+Built on top of: [PressLens](https://github.com/yourname/presslens-media-bias-analyzer) — no LLM code duplicated.
 
 ---
 
@@ -117,7 +117,7 @@ Builds time-series data fast enough to test all three hypotheses.
 
 **Phase 2 (90+ days):** weekly, every Monday at 22:00 UTC
 Market data is daily OHLCV — weekly scoring adds no analytical loss
-once correlations are established.
+once correlations are established. Reduces API cost by ~85%.
 
 To switch phases — no code change needed:
 ```bash
@@ -134,7 +134,7 @@ git push
 ## Quick start
 
 ```bash
-git clone https://github.com/zhenna/media-divergence-oil-price-signal
+git clone https://github.com/yourname/media-divergence-oil-price-signal
 cd media-divergence-oil-price-signal
 
 python -m venv .venv
@@ -219,7 +219,7 @@ Sufficient for directional findings, not publication-quality research.
 
 ## Related
 
-- [PressLens](https://github.com/zhenna/presslens-media-bias-analyzer) — media bias analyzer this project consumes
+- [PressLens](https://github.com/yourname/presslens-media-bias-analyzer) — media bias analyzer this project consumes
 - [Blog post](https://medium.com/@luzhenna) — technical writeup
 
 ---
