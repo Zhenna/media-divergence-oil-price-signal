@@ -34,13 +34,20 @@ router = APIRouter()
 @router.get("/debug/env")
 async def debug_env():
     """Temporary debug endpoint — remove after fixing."""
+    import os
     from backend.models.config import settings
+    # Show all env vars that contain PRESS or API or KEY
+    relevant = {k: v[:8]+"..." if len(v) > 8 else v
+                for k, v in os.environ.items()
+                if any(x in k.upper() for x in ["PRESS", "API_KEY", "OPENAI"])}
     return {
         "presslens_url": settings.presslens_url,
         "api_key_length": len(settings.presslens_api_key),
         "api_key_prefix": settings.presslens_api_key[:8] if settings.presslens_api_key else "EMPTY",
         "provider": settings.presslens_provider,
         "pipeline_cadence": settings.pipeline_cadence,
+        "relevant_env_vars": relevant,
+        "raw_presslens_api_key": os.environ.get("PRESSLENS_API_KEY", "NOT_FOUND")[:8],
     }
 
 
