@@ -9,20 +9,17 @@ PressLens repo: https://github.com/yourname/presslens-media-bias-analyzer
 from __future__ import annotations
 
 import httpx
+import os
 from datetime import datetime, timezone
 
 from backend.models.schemas import BiasSnapshot
 from backend.models.config import settings, TRACKED_TOPICS
 
 
-async def fetch_bias_scores(
-    topic: str,
-    outlet_ids: list[str],
-) -> tuple[list[BiasSnapshot], int, str]:
-    """
-    Call PressLens /api/analyze.
-    Returns: (snapshots, consensus_fact_count, key_divergence)
-    """
+async def fetch_bias_scores(topic, outlet_ids):
+    api_key = os.environ.get("PRESSLENS_API_KEY", "")
+    print(f"[DEBUG] api_key from os.environ: length={len(api_key)}")
+    
     async with httpx.AsyncClient(timeout=60) as client:
         res = await client.post(
             f"{settings.presslens_url}/api/analyze",
@@ -30,7 +27,7 @@ async def fetch_bias_scores(
                 "topic": topic,
                 "outlets": outlet_ids,
                 "provider": settings.presslens_provider,
-                "api_key": settings.presslens_api_key,
+                "api_key": api_key,
                 "time_range_days": 7,
             },
         )
