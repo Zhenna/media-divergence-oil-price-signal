@@ -2,8 +2,8 @@
 
 > When RT and Al Jazeera tell a different story from Reuters and BBC, does oil move? A data pipeline that measures narrative divergence across global press and correlates it with WTI crude prices — daily, automated, statistically tested.
 
-Live demo: **[your-railway-url]**
-Built on top of: [PressLens](https://github.com/yourname/presslens-media-bias-analyzer) — no LLM code duplicated.
+**Live demo:** [railway-url](https://media-divergence-oil-price-signal-production.up.railway.app/)
+**Built on top of:** [PressLens](https://github.com/zhenna/presslens-media-bias-analyzer) — no LLM code duplicated.
 
 ---
 
@@ -28,7 +28,7 @@ geopolitical situations drive oil market uncertainty.
 
 *Accumulating data — results published after 90 days.*
 
-Three hypotheses tested daily against accumulating data:
+Three hypotheses tested daily:
 
 **H1 — Confirmatory**
 Narrative polarization between non-Western (RT, Al Jazeera, CGTN) and Western
@@ -37,15 +37,11 @@ than any single outlet's mean sentiment score.
 
 **H2 — Exploratory**
 WTI crude rises within 48 hours of a polarization spike even when Reuters
-scores below 3 — consistent with algorithmic trading on anticipated supply risk
-rather than realized supply disruption.
+scores below 3 — anticipated shock premium, not realized event response.
 
 **H3 — Exploratory**
-The directional spread between non-Western cluster mean and Western cluster mean
-is a stronger oil predictor than overall outlet standard deviation alone.
-
-See the live dashboard for current hypothesis status, correlation charts,
-and plain-English analysis of each result.
+Directional cluster divergence (non-Western mean minus Western mean) is a
+stronger oil predictor than raw standard deviation alone.
 
 ---
 
@@ -59,12 +55,12 @@ Non-Western: RT (RU) · Al Jazeera (QA) · CGTN (CN)
 Western:     Reuters (INT) · BBC (GB) · NY Times (US)
 ```
 
-**Markets:** WTI Crude Oil · Brent Crude
+**Markets:** WTI Crude Oil · Brent Crude · Gold · VIX
 
-**Key historical events used to validate data:**
-- Jan 3 2020 — Soleimani assassination (+6% oil)
-- Jul 15 2022 — JCPOA talks collapse (+2% oil)
-- Apr 14 2024 — Iran direct strike on Israel (+4% oil)
+**Key historical anchor events:**
+- Jan 3 2020 — Soleimani assassination ($63.27 → $65.75 WTI)
+- Jul 15 2022 — JCPOA talks collapse ($102.60 WTI)
+- Apr 14 2024 — Iran direct strike on Israel ($85.41 WTI)
 
 ---
 
@@ -75,17 +71,17 @@ Google BigQuery (one-time)
     └── GDELT historical data 2020–present ──► Neon PostgreSQL
 
 GitHub Actions (daily at 22:00 UTC)
-    ├── pytest tests (gate — pipeline only runs if tests pass)
+    ├── pytest tests (gate — only runs if tests pass)
     ├── PressLens API ──► bias scores ──────────► Neon PostgreSQL
     ├── yfinance ──────► WTI + Brent prices ───► Neon PostgreSQL
     ├── polarization engine (scipy) ────────────► Neon PostgreSQL
     └── hypothesis tests ──► MLflow (DagsHub) ──► Neon PostgreSQL
 
 Railway (always-on)
-    └── FastAPI dashboard ──► reads Neon ──► Plotly.js charts
+    └── FastAPI + Plotly.js dashboard ──► reads Neon
 
 LangSmith
-    └── traces every PressLens API call (cost, latency, schema pass rate)
+    └── traces every PressLens API call
 ```
 
 ---
@@ -94,39 +90,28 @@ LangSmith
 
 | Tool | Purpose | Why this tool |
 |---|---|---|
-| GitHub Actions | Daily pipeline + CI/CD | Tests gate every run; workflow file is version-controlled |
-| Neon PostgreSQL | Time-series storage | Serverless, scales to zero, accessible from Actions + Railway |
-| LangSmith | LLM call tracing | Cost, latency, schema pass rate per run — free tier |
-| DagsHub MLflow | Experiment tracking | Every hypothesis test logged as a reproducible experiment |
-| Pydantic | Output validation | Schema enforcement before any data reaches the database |
-| APScheduler | In-app scheduling | Embedded in FastAPI — no separate Airflow infrastructure |
+| GitHub Actions | Daily pipeline + CI/CD | Tests gate every run; version-controlled |
+| Neon PostgreSQL | Time-series storage | Serverless, scales to zero |
+| LangSmith | LLM call tracing | Cost, latency, schema pass rate |
+| DagsHub MLflow | Experiment tracking | Every hypothesis test logged reproducibly |
+| Pydantic | Output validation | Schema enforcement before DB writes |
+| APScheduler | In-app scheduling | No Airflow overhead for one daily job |
 
-**What's intentionally excluded:**
-- Airflow — one pipeline, one schedule; APScheduler is sufficient
-- Kubernetes — single service, Railway handles deployment
-- Kafka — one event per day; a cron job is the right tool
-- Vector database — aggregated daily scores, no semantic search needed
-- Feature store — no model training; PostgreSQL tables serve this role
+**Intentionally excluded:** Airflow (one pipeline), Kubernetes (single service),
+Kafka (one daily event), vector database (no semantic search needed),
+feature store (no model training).
 
 ---
 
 ## Pipeline cadence
 
 **Phase 1 (first 90 days):** daily at 22:00 UTC
-Builds time-series data fast enough to test all three hypotheses.
+**Phase 2 (90+ days):** weekly, every Monday 22:00 UTC
 
-**Phase 2 (90+ days):** weekly, every Monday at 22:00 UTC
-Market data is daily OHLCV — weekly scoring adds no analytical loss
-once correlations are established. Reduces API cost by ~85%.
-
-To switch phases — no code change needed:
+To switch — no code change needed:
 ```bash
-# In Railway environment variables
-PIPELINE_CADENCE=weekly
-
-# In GitHub repo
-git mv .github/workflows/daily_pipeline.yml .github/workflows/daily_pipeline.yml.disabled
-git push
+# In railway.toml startCommand, change cron reference
+# Rename .github/workflows/daily_pipeline.yml → .disabled
 ```
 
 ---
@@ -134,22 +119,19 @@ git push
 ## Quick start
 
 ```bash
-git clone https://github.com/yourname/media-divergence-oil-price-signal
+git clone https://github.com/zhenna/media-divergence-oil-price-signal
 cd media-divergence-oil-price-signal
 
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-cp .env.example .env
-# Edit .env: add PRESSLENS_API_KEY, DATABASE_URL, LANGCHAIN_API_KEY
+cp .env.example .env          # fill in your keys
+cp railway.toml.example railway.toml   # fill in for Railway deploy
 
 # One-time historical backfill
-python scripts/backfill_prices.py     # WTI + Brent, 2020–present (~30s)
-python scripts/backfill_gdelt.py      # Iran coverage via BigQuery (~5min)
+python scripts/backfill_prices.py      # WTI + Brent 2020–present
 
-# Start the app
+# Run locally
 uvicorn backend.main:app --reload
 # Open http://localhost:8000
 ```
@@ -160,31 +142,22 @@ uvicorn backend.main:app --reload
 
 | Variable | Description | Where to get it |
 |---|---|---|
-| `PRESSLENS_API_KEY` | OpenAI key for PressLens scoring | platform.openai.com |
+| `OPENAI_API_KEY` | OpenAI key for PressLens scoring | platform.openai.com |
 | `PRESSLENS_URL` | PressLens deployment URL | your Railway PressLens app |
 | `DATABASE_URL` | PostgreSQL connection string | neon.tech |
 | `PIPELINE_CADENCE` | `daily` or `weekly` | set manually |
 | `MLFLOW_TRACKING_URI` | DagsHub MLflow endpoint | dagshub.com |
-| `MLFLOW_TRACKING_USERNAME` | DagsHub username | dagshub.com |
-| `MLFLOW_TRACKING_PASSWORD` | DagsHub token | dagshub.com → Settings |
-| `LANGCHAIN_API_KEY` | LangSmith API key | smith.langchain.com |
-| `LANGCHAIN_PROJECT` | LangSmith project name | set manually |
+| `LANGCHAIN_API_KEY` | LangSmith tracing key | smith.langchain.com |
 
 ---
 
 ## Deploy
 
-```bash
-# Railway
-railway login && railway init && railway up
-# Add PostgreSQL addon in Railway dashboard
-# Set all environment variables above
+See [DEPLOY.md](DEPLOY.md) for full Railway deployment instructions.
 
-# GitHub Actions runs automatically at 22:00 UTC
-# Add secrets: Settings → Secrets → Actions
-```
-
-Full instructions: [DEPLOY.md](DEPLOY.md)
+**Note:** `railway.toml` is gitignored — it contains your API key inline
+due to a Railway Beta Runtime V2 variable injection bug.
+Copy `railway.toml.example` → `railway.toml` and fill in your values.
 
 ---
 
@@ -192,34 +165,32 @@ Full instructions: [DEPLOY.md](DEPLOY.md)
 
 ```bash
 pytest tests/ -v
+# No API keys required — tests use synthetic data
 ```
-
-No API keys required — tests use synthetic data only.
 
 ---
 
 ## Limitations
 
-**Correlation is not causation.** Both polarization and prices may respond
-to the same underlying event rather than one causing the other.
+**Correlation ≠ causation.** Both polarization and prices respond to the same
+underlying geopolitical events — not necessarily one causing the other.
 
 **GDELT vs PressLens scoring.** Historical analysis uses GDELT tone scores
-(dictionary-based) as a polarization proxy. Live analysis uses PressLens
-6-dimension LLM scoring. The two methods are compared directly for the
-overlapping period to validate consistency.
+(dictionary-based). Live analysis uses PressLens 6-dimension LLM scoring.
+The two methods are compared for the overlapping period.
 
-**LLM Western training bias.** PressLens scores are generated by GPT-4o mini,
-trained predominantly on English-language Western text. RT and CGTN scores
-may be systematically inflated. See PressLens limitations for detail.
+**LLM Western training bias.** GPT-4o mini was trained on predominantly
+English-language Western text. RT and CGTN scores may be systematically
+inflated compared to a truly neutral baseline.
 
-**Sample size.** 90 days of daily data gives ~90 data points per outlet.
-Sufficient for directional findings, not publication-quality research.
+**Sample size.** 90 days gives ~90 data points. Directionally meaningful,
+not publication-quality research.
 
 ---
 
 ## Related
 
-- [PressLens](https://github.com/yourname/presslens-media-bias-analyzer) — media bias analyzer this project consumes
+- [PressLens](https://github.com/zhenna/presslens-media-bias-analyzer) — the bias scoring engine this project consumes
 - [Blog post](https://medium.com/@luzhenna) — technical writeup
 
 ---

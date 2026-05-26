@@ -2,7 +2,7 @@
 builder = "RAILPACK"
 
 [deploy]
-startCommand = "OPENAI_API_KEY=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 uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "OPENAI_API_KEY=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 uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/api/topics"
 healthcheckTimeout = 60
 restartPolicyType = "on_failure"
@@ -13,7 +13,7 @@ PRESSLENS_URL = "https://presslens-production-3f0c.up.railway.app"
 PIPELINE_CADENCE = "daily"
 LANGCHAIN_TRACING_V2 = "true"
 LANGCHAIN_PROJECT = "media-divergence-oil-price-signal"
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 DATABASE_URL = "postgresql://neondb_owner:npg_LaT6Qoqzx1sN@ep-broad-pine-ap3xh6mt-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 LANGCHAIN_API_KEY = "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"
 MLFLOW_TRACKING_URI = "https://dagshub.com/Zhenna/media-divergence-oil-price-signal.mlflow/"
