@@ -37,8 +37,9 @@ async def debug_env():
     import os
     from backend.models.config import settings
     return {
-        "api_key_length": len(os.environ.get("PRESSLENS_API_KEY", "")),
-        "api_key_prefix": os.environ.get("PRESSLENS_API_KEY", "EMPTY")[:8],
+        "PRESSLENS_API_KEY_length": len(os.environ.get("PRESSLENS_API_KEY", "")),
+        "OPENAI_API_KEY_length": len(os.environ.get("OPENAI_API_KEY", "")),
+        "OPENAI_KEY_length": len(os.environ.get("OPENAI_KEY", "")),
         "provider": settings.presslens_provider,
         "pipeline_cadence": settings.pipeline_cadence,
     }
