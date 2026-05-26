@@ -31,6 +31,19 @@ from pipeline.price_fetcher import prices_to_dataframe
 router = APIRouter()
 
 
+@router.get("/debug/env")
+async def debug_env():
+    """Temporary debug endpoint — remove after fixing."""
+    from backend.models.config import settings
+    return {
+        "presslens_url": settings.presslens_url,
+        "api_key_length": len(settings.presslens_api_key),
+        "api_key_prefix": settings.presslens_api_key[:8] if settings.presslens_api_key else "EMPTY",
+        "provider": settings.presslens_provider,
+        "pipeline_cadence": settings.pipeline_cadence,
+    }
+
+
 @router.get("/topics")
 async def list_topics():
     return [{"topic": t, "outlets": o} for t, o in TRACKED_TOPICS.items()]
