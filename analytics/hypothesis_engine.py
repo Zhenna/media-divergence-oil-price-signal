@@ -67,6 +67,9 @@ async def _test_hypothesis(h_id: str, h: dict) -> dict:
     elif signal_type == "outlet_comparison":
         return await _test_outlet_comparison_hypothesis(h_id, h)
 
+    elif signal_type == "cluster_divergence":
+        return await _test_cluster_divergence_hypothesis(h_id, h)
+
     else:
         raise ValueError(f"Unknown signal type: {signal_type}")
 
@@ -256,6 +259,100 @@ async def _test_outlet_comparison_hypothesis(h_id: str, h: dict) -> dict:
         "tested_at": datetime.now(timezone.utc).isoformat(),
         "verdict": _verdict_comparison(h_id, outlet_a, outlet_b, r_a, r_b, outlet_results),
     }
+
+
+
+async def _test_cluster_divergence_hypothesis(h_id: str, h: dict) -> dict:
+    """
+    H3: test directional cluster divergence vs market price.
+    Signal = non_western_mean - western_mean (signed, not absolute std dev).
+    Tests whether the DIRECTION of divergence matters more than raw spread.
+    """
+    from backend.models.config import OUTLET_CLUSTERS
+
+    topic = h["topics"][0]
+    bias_records = await get_bias_records(topic)
+    price_records = await get_price_records(symbols=[h["market"]])
+
+    if len(bias_records) < settings.min_sample_size:
+        return _insufficient_result(h_id, h, len(bias_records))
+
+    # Build daily cluster means
+    import pandas as pd
+    df = pd.DataFrame(bias_records)
+    df["date"] = pd.to_datetime(df["scored_at"]).dt.normalize()
+
+    non_western = OUTLET_CLUSTERS["non_western"]
+    western = OUTLET_CLUSTERS["western"]
+
+    nw = df[df["outlet_id"].isin(non_western)].groupby("date")[h["dimension"]].mean()
+    w  = df[df["outlet_id"].isin(western)].groupby("date")[h["dimension"]].mean()
+
+    # Directional divergence signal: non_western - western
+    cluster_gap = (nw - w).dropna()
+
+    if len(cluster_gap) < settings.min_sample_size:
+        return _insufficient_result(h_id, h, len(cluster_gap))
+
+    price_series = _records_to_series(price_records, h["market"])
+
+    # Best correlation for cluster divergence
+    best_cluster = _best_correlation(
+        cluster_gap, price_series, h["lag_days"], h["significance_threshold"]
+    )
+
+    # Compare against raw std_dev (H1 signal) to test if directional beats raw
+    pol_records = await get_polarization_records(topic)
+    from analytics.polarization import polarization_to_series
+    std_signal = polarization_to_series(pol_records, h["dimension"])
+    best_std = _best_correlation(
+        std_signal, price_series, h["lag_days"], h["significance_threshold"]
+    )
+
+    # H3 supported if cluster gap correlates better than raw std dev
+    supported = (
+        best_cluster is not None
+        and best_cluster["is_significant"]
+        and (best_std is None or abs(best_cluster["pearson_r"]) > abs(best_std["pearson_r"]))
+    )
+
+    return {
+        "hypothesis_id": h_id,
+        "name": h["name"],
+        "type": h["type"],
+        "description": h["description"],
+        "tested": True,
+        "supported": supported,
+        "best_correlation": best_cluster,
+        "comparison": {
+            "cluster_gap_r": best_cluster["pearson_r"] if best_cluster else None,
+            "std_dev_r": best_std["pearson_r"] if best_std else None,
+            "cluster_wins": supported,
+        },
+        "sample_size": len(cluster_gap),
+        "tested_at": datetime.now(timezone.utc).isoformat(),
+        "verdict": _verdict_cluster(h_id, supported, best_cluster, best_std),
+    }
+
+
+def _verdict_cluster(h_id, supported, best_cluster, best_std) -> str:
+    if not best_cluster:
+        return "Insufficient data to test cluster divergence hypothesis yet."
+    r = best_cluster["pearson_r"]
+    lag = best_cluster["lag_days"]
+    p = best_cluster["p_value"]
+    std_r = best_std["pearson_r"] if best_std else None
+    if supported:
+        return (
+            f"Cluster gap (non-Western minus Western) correlates with oil "
+            f"at r={r:.3f}, lag={lag}d, p={p:.3f} — stronger than raw std dev "
+            f"(r={std_r:.3f}). Directional divergence carries more signal."
+        )
+    return (
+        f"Cluster gap (r={r:.3f}) does not outperform raw std dev "
+        f"(r={std_r:.3f if std_r else 'N/A'}). "
+        f"Direction of divergence adds no marginal predictive value."
+    )
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
