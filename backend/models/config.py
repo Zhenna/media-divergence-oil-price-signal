@@ -37,7 +37,9 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-        extra = "ignore"    # silently ignore any other env vars not listed above
+        env_file_encoding = "utf-8"
+        case_sensitive = False    
+        extra = "ignore"
 
 
 settings = Settings()
