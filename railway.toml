@@ -1,8 +1,8 @@
 [build]
-builder = "dockerfile"
+builder = "nixpacks"
 
 [deploy]
-startCommand = "/bin/sh -c 'uvicorn backend.main:app --host 0.0.0.0 --port $PORT'"
+startCommand = "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/api/topics"
 healthcheckTimeout = 30
 restartPolicyType = "on_failure"
@@ -13,9 +13,3 @@ PRESSLENS_URL = "https://presslens-production-3f0c.up.railway.app"
 PIPELINE_CADENCE = "daily"
 LANGCHAIN_TRACING_V2 = "true"
 LANGCHAIN_PROJECT = "media-divergence-oil-price-signal"
-PRESSLENS_API_KEY = "${{PRESSLENS_API_KEY}}"
-DATABASE_URL = "${{DATABASE_URL}}"
-LANGCHAIN_API_KEY = "${{LANGCHAIN_API_KEY}}"
-MLFLOW_TRACKING_URI = "${{MLFLOW_TRACKING_URI}}"
-MLFLOW_TRACKING_USERNAME = "${{MLFLOW_TRACKING_USERNAME}}"
-MLFLOW_TRACKING_PASSWORD = "${{MLFLOW_TRACKING_PASSWORD}}"
