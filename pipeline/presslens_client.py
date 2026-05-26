@@ -34,7 +34,11 @@ async def fetch_bias_scores(
                 "time_range_days": 7,
             },
         )
-        res.raise_for_status()
+        if res.status_code != 200:
+            print(f"[PressLens DEBUG] Status: {res.status_code}")
+            print(f"[PressLens DEBUG] Response body: {res.text}")
+            print(f"[PressLens DEBUG] api_key sent: length={len(settings.presslens_api_key)} prefix={settings.presslens_api_key[:8] if settings.presslens_api_key else 'EMPTY'}")
+            res.raise_for_status()
         data = res.json()
 
     snapshots = []
