@@ -2,7 +2,7 @@
 builder = "RAILPACK"
 
 [deploy]
-startCommand = "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "OPENAI_API_KEY=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 uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/api/topics"
 healthcheckTimeout = 60
 restartPolicyType = "on_failure"
