@@ -1,0 +1,41 @@
+name: Daily Pipeline
+
+on:
+  schedule:
+    - cron: '0 22 * * *'   # 22:00 UTC daily — 1h after US market close
+  workflow_dispatch:        # manual trigger for testing
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest tests/ -v --tb=short
+
+      - name: Run pipeline
+        if: success()
+        run: python -m pipeline.run
+        env:
+          OPENAI_API_KEY:           ${{ secrets.OPENAI_API_KEY }}
+          PRESSLENS_URL:            https://presslens-production-3f0c.up.railway.app
+          PRESSLENS_PROVIDER:       openai
+          DATABASE_URL:             ${{ secrets.DATABASE_URL }}
+          PIPELINE_CADENCE:         daily
+          LANGCHAIN_TRACING_V2:     "true"
+          LANGCHAIN_API_KEY:        ${{ secrets.LANGCHAIN_API_KEY }}
+          LANGCHAIN_PROJECT:        media-divergence-oil-price-signal
+          MLFLOW_TRACKING_URI:      ${{ secrets.MLFLOW_TRACKING_URI }}
+          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
