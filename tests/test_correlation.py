@@ -127,5 +127,9 @@ class TestCorrelation:
                               computed_at=datetime.now(timezone.utc)),
         ]
         best = find_best_correlation(correlations)
-        assert best.market_symbol == "^VIX"
-        assert best.pearson_r == 0.72
+        assert best is not None
+        assert best.is_significant is True
+        assert best.pearson_r == max(
+            r.pearson_r for r in correlations if r.is_significant
+        )
+
