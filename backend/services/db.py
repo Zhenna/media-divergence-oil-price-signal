@@ -17,7 +17,22 @@ from backend.models.schemas import (
     BiasSnapshot, MarketPrice, PolarizationScore, CorrelationResult
 )
 
-engine = create_engine(settings.database_url, echo=False)
+# Connection pool settings for Neon PostgreSQL
+# Neon closes idle connections after inactivity — pool_pre_ping reconnects
+import re as _re
+_is_sqlite = settings.database_url.startswith("sqlite")
+if _is_sqlite:
+    engine = create_engine(settings.database_url, echo=False)
+else:
+    engine = create_engine(
+        settings.database_url,
+        echo=False,
+        pool_pre_ping=True,
+        pool_recycle=300,
+        pool_size=5,
+        max_overflow=10,
+        connect_args={"sslmode": "require", "connect_timeout": 10},
+    )
 
 
 # ── SQLModel table definitions ────────────────────────────────────────────────
