@@ -18,7 +18,12 @@ class Settings(BaseSettings):
     pipeline_cadence: Literal["daily", "weekly"] = "daily"
 
     # Database
-    database_url: str = "sqlite:///./signals.db"
+    # Neon URL hardcoded as default — Railway Runtime V2 blocks DATABASE_URL injection
+    # Override with DATABASE_URL env var for local development (SQLite)
+    database_url: str = os.environ.get(
+        "DATABASE_URL",
+        "postgresql://neondb_owner:npg_LaT6Qoqzx1sN@ep-broad-pine-ap3xh6mt-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+    )
 
     # Correlation analysis
     correlation_lag_days: list[int] = [0, 1, 2, 3, 5, 7]
