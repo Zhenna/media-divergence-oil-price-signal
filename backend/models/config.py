@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     # Override with DATABASE_URL env var for local development (SQLite)
     database_url: str = os.environ.get(
         "DATABASE_URL",
-        "postgresql://neondb_owner:npg_LaT6Qoqzx1sN@ep-broad-pine-ap3xh6mt-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+        "postgresql://neondb_owner:npg_YOseWvTU9zb6@ep-broad-pine-ap3xh6mt-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
     )
 
     # Correlation analysis
