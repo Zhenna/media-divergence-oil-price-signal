@@ -68,14 +68,14 @@ Western:     Reuters (INT) · BBC (GB) · NY Times (US)
 
 ```
 Google BigQuery (one-time)
-    └── GDELT historical data 2020–present ──► Neon PostgreSQL
+    └── GDELT historical data 2020–present ──► Neon
 
 GitHub Actions (daily at 22:00 UTC)
     ├── pytest tests (gate — only runs if tests pass)
-    ├── PressLens API ──► bias scores ──────────► Neon PostgreSQL
-    ├── yfinance ──────► WTI + Brent prices ───► Neon PostgreSQL
-    ├── polarization engine (scipy) ────────────► Neon PostgreSQL
-    └── hypothesis tests ──► MLflow (DagsHub) ──► Neon PostgreSQL
+    ├── PressLens API ──► bias scores ──────────► Neon
+    ├── yfinance ──────► WTI + Brent prices ───► Neon
+    ├── polarization engine (scipy) ────────────► Neon
+    └── hypothesis tests ──► MLflow (DagsHub) ──► Neon
 
 Railway (always-on)
     └── FastAPI + Plotly.js dashboard ──► reads Neon
