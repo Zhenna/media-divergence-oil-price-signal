@@ -94,7 +94,13 @@ def polarization_to_series(
         return pd.Series(dtype=float)
 
     df = pd.DataFrame(filtered)
-    df["measured_at"] = pd.to_datetime(df["measured_at"]).dt.normalize()
-    # If multiple readings per day, take the last one
-    df = df.sort_values("measured_at").groupby("measured_at")["std_dev"].last()
-    return df
+    df["date"] = pd.to_datetime(df["measured_at"]).dt.normalize()
+    
+    # Deduplicate — take mean if multiple runs on same day
+    daily = df.groupby("date")["std_dev"].mean()
+    return daily.sort_index()
+
+    # df["measured_at"] = pd.to_datetime(df["measured_at"]).dt.normalize()
+    # # If multiple readings per day, take the last one
+    # df = df.sort_values("measured_at").groupby("measured_at")["std_dev"].last()
+    # return df

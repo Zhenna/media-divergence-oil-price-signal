@@ -124,13 +124,50 @@ async def store_prices(prices: list[MarketPrice]) -> None:
         session.commit()
 
 
+# async def store_polarization(scores: list[PolarizationScore]) -> None:
+#     with Session(engine) as session:
+#         for s in scores:
+#             session.add(PolarizationDB(**s.model_dump()))
+#         session.commit()
+
+
 async def store_polarization(scores: list[PolarizationScore]) -> None:
+    """
+    Upsert polarization scores by topic + dimension + calendar date.
+    If a record already exists for today, update it instead of inserting
+    a duplicate. This handles multiple pipeline runs on the same day
+    (e.g. manual run + scheduled run) without inflating sample_size.
+    """
     with Session(engine) as session:
         for s in scores:
-            session.add(PolarizationDB(**s.model_dump()))
+            today = s.measured_at.date() if hasattr(s.measured_at, 'date') else s.measured_at
+            day_start = datetime.combine(today, datetime.min.time()).replace(tzinfo=timezone.utc)
+            day_end = day_start + timedelta(days=1)
+
+            existing = session.exec(
+                select(PolarizationDB).where(
+                    PolarizationDB.topic == s.topic,
+                    PolarizationDB.dimension == s.dimension,
+                    PolarizationDB.measured_at >= day_start,
+                    PolarizationDB.measured_at < day_end,
+                )
+            ).first()
+
+            if existing:
+                # Update existing record — latest run overwrites earlier same-day run
+                existing.std_dev = s.std_dev
+                existing.mean_score = s.mean_score
+                existing.min_score = s.min_score
+                existing.max_score = s.max_score
+                existing.spread = s.spread
+                existing.outlet_count = s.outlet_count
+                existing.measured_at = s.measured_at
+                session.add(existing)
+            else:
+                session.add(PolarizationDB(**s.model_dump()))
         session.commit()
 
-
+        
 async def store_correlations(correlations: list[CorrelationResult]) -> None:
     with Session(engine) as session:
         for c in correlations:
