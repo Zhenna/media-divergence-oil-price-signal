@@ -133,6 +133,11 @@ cp .env.example .env          # fill in your keys
 # One-time historical backfill
 python scripts/backfill_prices.py      # WTI + Brent 2020–present
 
+# Optional — GDELT historical news backfill (requires Google Cloud)
+# pip install google-cloud-bigquery
+# export GOOGLE_APPLICATION_CREDENTIALS="/path/to/key.json"
+# python scripts/backfill_gdelt.py    # Iran coverage 2020–present via BigQuery
+
 # Run locally
 uvicorn backend.main:app --reload
 # Open http://localhost:8000
