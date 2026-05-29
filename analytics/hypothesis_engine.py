@@ -334,7 +334,6 @@ async def _test_cluster_divergence_hypothesis(h_id: str, h: dict) -> dict:
         "verdict": _verdict_cluster(h_id, supported, best_cluster, best_std),
     }
 
-
 def _verdict_cluster(h_id, supported, best_cluster, best_std) -> str:
     if not best_cluster:
         return "Insufficient data to test cluster divergence hypothesis yet."
@@ -342,15 +341,16 @@ def _verdict_cluster(h_id, supported, best_cluster, best_std) -> str:
     lag = best_cluster["lag_days"]
     p = best_cluster["p_value"]
     std_r = best_std["pearson_r"] if best_std else None
+    std_r_str = f"{std_r:.3f}" if std_r is not None else "N/A"
     if supported:
         return (
             f"Cluster gap (non-Western minus Western) correlates with oil "
             f"at r={r:.3f}, lag={lag}d, p={p:.3f} — stronger than raw std dev "
-            f"(r={std_r:.3f}). Directional divergence carries more signal."
+            f"(r={std_r_str}). Directional divergence carries more signal."
         )
     return (
         f"Cluster gap (r={r:.3f}) does not outperform raw std dev "
-        f"(r={std_r:.3f if std_r else 'N/A'}). "
+        f"(r={std_r_str}). "
         f"Direction of divergence adds no marginal predictive value."
     )
 
