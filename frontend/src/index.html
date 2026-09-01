@@ -105,12 +105,19 @@
 
   <!-- Insight hero -->
   <div class="insight">
-    <div class="insight-q">When does media divergence lead oil prices and when does it lag?</div>
+    <div class="insight-q">Kinetic events drive oil prices. After the shock, media divergence tracks the recovery.</div>
     <div class="insight-a">
-      Six months of daily scoring across RT, Al Jazeera, CGTN, Reuters, BBC and NY Times reveals a regime-dependent relationship.
-      During ambiguous geopolitical tension — before any kinetic event — narrative divergence between non-Western and Western outlets
-      tends to <strong style="color:#1c1c1a">precede oil price moves by 3 days</strong>.
-      During clear kinetic events, the causal direction reverses: prices spike first on undisputed facts, and outlets diverge on interpretation afterward.
+      Six months of daily scoring across RT, Al Jazeera, CGTN, Reuters, BBC and NY Times shows that kinetic events —
+      not narrative divergence — are the primary driver of oil price moves. When the US and Israel struck Iran on February 28, 2026
+      and Iran closed the Strait of Hormuz, WTI surged from $67 to $95 in one week while media polarization stayed low:
+      all outlets reported the same undisputed facts.
+      <br><br>
+      What emerges <em>after</em> the initial shock is more nuanced. As the crisis evolved, non-Western outlets (RT, Al Jazeera, CGTN)
+      framed Iran as a sovereign nation under illegal attack — sustaining alarm and supply-disruption narratives.
+      Western outlets (Reuters, BBC, NY Times) framed it as a targeted military operation with defined objectives — signalling
+      eventual resolution. This divergence in interpretation, measured as directional cluster gap, showed a
+      <strong style="color:#1c1c1a">statistically significant correlation with WTI at 3-day lag (r=0.329, p=0.011)</strong>:
+      when non-Western framing ran hotter than Western framing, oil prices tended to remain elevated 3 days later.
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
       <div class="insight-stat">
@@ -127,9 +134,10 @@
       </div>
     </div>
     <div class="regime-note">
-      <strong>The boundary condition:</strong> the signal exists only when outlets have genuine interpretive freedom.
-      Once a physical event is undeniable — a strait closes, a supreme leader is killed — all outlets report the same facts.
-      Polarization collapses as a predictive signal; it becomes a lagging indicator of narrative competition instead.
+      <strong>Example:</strong> After the April 8 ceasefire, RT continued framing Iran as "resisting Western aggression" while Reuters reported
+      "gradual Hormuz reopening underway." This divergence — non-Western alarm versus Western normalisation — preceded
+      the slower-than-expected oil price decline. Prices stayed above $95 for two more weeks before falling toward $69.
+      The narrative gap appears to have reflected genuine market uncertainty about whether the ceasefire would hold.
     </div>
   </div>
 
@@ -367,7 +375,11 @@ async function loadClusterScores() {
     try {
       const bias = await fetchJSON('/api/bias_records/Iran%20US%20Conflict?days=7');
       const byOutlet = {};
-      (bias || []).forEach(r => { if (!byOutlet[r.outlet_id]) byOutlet[r.outlet_id] = r; });
+      (bias || []).forEach(r => {
+        if (!byOutlet[r.outlet_id] || r.scored_at > byOutlet[r.outlet_id].scored_at) {
+          byOutlet[r.outlet_id] = r;
+        }
+      });
       outlets.forEach(o => {
         if (byOutlet[o.id]) {
           o.score = byOutlet[o.id].overall;
