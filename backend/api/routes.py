@@ -24,18 +24,6 @@ from pipeline.price_fetcher import prices_to_dataframe
 router = APIRouter()
 
 
-# @router.get("/debug/env")
-# async def debug_env():
-#     """Temporary — remove after confirming pipeline works."""
-#     from backend.models.config import settings
-#     return {
-#         "OPENAI_API_KEY_length": len(os.environ.get("OPENAI_API_KEY", "")),
-#         "provider": settings.presslens_provider,
-#         "pipeline_cadence": settings.pipeline_cadence,
-#         "presslens_url": settings.presslens_url,
-#     }
-
-
 @router.get("/topics")
 async def list_topics():
     return [{"topic": t, "outlets": o} for t, o in TRACKED_TOPICS.items()]
@@ -44,6 +32,23 @@ async def list_topics():
 @router.get("/markets")
 async def list_markets():
     return [{"symbol": s, "name": n} for s, n in MARKET_SYMBOLS.items()]
+
+
+@router.get("/bias_records/{topic}")
+async def get_bias_records_endpoint(topic: str, days: int = 7):
+    """
+    Return raw bias snapshots for a topic.
+    Used by the dashboard to show per-outlet scores and verdicts.
+    Each record includes: outlet_id, outlet_name, scored_at, overall,
+    emotional_tone, framing, political_stance, sentiment, verdict.
+    """
+    records = await get_bias_records(topic, days=days)
+    if not records:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No bias records for '{topic}' in the last {days} days."
+        )
+    return records
 
 
 @router.get("/correlations/{topic}")
