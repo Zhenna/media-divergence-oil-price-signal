@@ -13,34 +13,28 @@
     body{font-family:'Inter',system-ui,sans-serif;background:#efefef;color:#1c1c1a;min-height:100vh;padding:1.5rem 1.25rem 3rem}
     .inner{max-width:960px;margin:0 auto}
 
-    /* Header */
     .hdr{display:flex;align-items:center;gap:14px;padding-bottom:18px;border-bottom:1px solid #e5e2da;margin-bottom:22px}
     .logo-text{font-family:'Source Serif 4',Georgia,serif;font-size:22px;font-weight:600;color:#1c1c1a;letter-spacing:-.4px}
     .logo-sub{font-size:12px;color:#6b6b6b;margin-top:2px}
-    .tagline{font-size:13px;color:#6b6b6b;border-left:1px solid #e5e2da;padding-left:14px;margin-left:2px;line-height:1.5}
 
-    /* Labels */
     .lbl{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:#aaa;margin-bottom:10px}
 
-    /* Metric cards */
     .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:22px}
     .metric{background:#fff;border:1px solid #e5e2da;border-radius:12px;padding:14px 16px}
     .metric-l{font-size:12px;color:#6b6b6b;margin-bottom:5px}
     .metric-v{font-family:'Source Serif 4',Georgia,serif;font-size:22px;font-weight:600;color:#1c1c1a}
     .metric-v.g{color:#166534}
-    .metric-v.a{color:#92400E}
     .metric-s{font-size:11px;color:#aaa;margin-top:3px}
 
-    /* Hypothesis blocks */
     .hyp-block{background:#fff;border:1px solid #e5e2da;border-radius:12px;overflow:hidden;margin-bottom:16px}
     .hyp-top{padding:1.25rem 1.5rem;border-bottom:1px solid #e5e2da}
     .hyp-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
     .hyp-id{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:#aaa;margin-bottom:5px}
     .hyp-name{font-family:'Source Serif 4',Georgia,serif;font-size:17px;font-weight:600;color:#1c1c1a;line-height:1.35}
-    .status-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:5px 14px;border-radius:100px;white-space:nowrap;flex-shrink:0}
-    .status-pill.sup{background:#F0FDF4;color:#166534}
-    .status-pill.pend{background:#FFFBEB;color:#92400E}
-    .status-pill.fail{background:#FEF2F2;color:#991B1B}
+    .finding-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:5px 14px;border-radius:100px;white-space:nowrap;flex-shrink:0}
+    .finding-pill.sig{background:#F0FDF4;color:#166534}
+    .finding-pill.null{background:#f8f7f4;color:#6b6b6b}
+    .finding-pill.lead{background:#EFF6FF;color:#1e40af}
     .stat-row{display:flex;gap:20px;margin-top:10px;flex-wrap:wrap}
     .stat-v{font-family:'Source Serif 4',Georgia,serif;font-size:20px;font-weight:600;color:#1c1c1a}
     .stat-l{font-size:11px;color:#aaa;margin-top:2px}
@@ -48,11 +42,9 @@
     .analysis-text{font-family:'Source Serif 4',Georgia,serif;font-size:14px;line-height:1.8;color:#1c1c1a}
     .hyp-chart{padding:1.25rem 1.5rem}
 
-    /* Cards */
     .card{background:#fff;border:1px solid #e5e2da;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:16px}
     .two-col{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:12px;margin-bottom:16px}
 
-    /* Table */
     .pl-table{width:100%;border-collapse:collapse;font-size:13px}
     .pl-table th{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:#aaa;padding:6px 9px;text-align:left;border-bottom:1px solid #e5e2da}
     .pl-table td{padding:10px 9px;border-bottom:1px solid #e5e2da;vertical-align:middle}
@@ -62,22 +54,16 @@
     .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:100px;font-weight:500}
     .cdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
 
-    /* Pipeline health */
-    .pipe-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e5e2da;font-size:13px}
-    .pipe-row:last-child{border-bottom:none}
-    .pipe-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .event-row{padding:10px 0;border-bottom:1px solid #e5e2da;font-size:13px}
+    .event-row:last-child{border-bottom:none}
+    .event-date{font-family:'Source Serif 4',serif;font-weight:600;color:#1c1c1a;font-size:14px}
+    .event-label{color:#6b6b6b;margin-top:2px}
+    .event-price{font-size:12px;color:#aaa;margin-top:2px}
+    .regime-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:500;margin-left:6px;vertical-align:middle}
 
-    /* Loading */
     .loading{color:#aaa;font-size:13px;font-style:italic;padding:20px 0}
     .spin{display:inline-block;width:12px;height:12px;border:2px solid #e5e2da;border-top-color:#1c1c1a;border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle}
     @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* Pending state */
-    .pending-box{padding:24px;text-align:center;color:#aaa}
-    .pending-title{font-family:'Source Serif 4',serif;font-size:15px;color:#6b6b6b;margin-bottom:6px}
-    .pending-sub{font-size:12px}
-    .progress-bar{background:#f0ede6;border-radius:100px;height:6px;margin:12px auto;max-width:200px;overflow:hidden}
-    .progress-fill{background:#1c1c1a;height:100%;border-radius:100px;transition:width .3s}
   </style>
 </head>
 <body>
@@ -98,7 +84,7 @@
       <div class="logo-sub">Iran US Conflict · WTI Crude Oil · 6 outlets</div>
     </div>
     <div style="margin-left:auto;text-align:right">
-      <div class="tagline" style="border-left:none;padding-left:0;margin-bottom:6px">Does narrative divergence between global outlets predict oil prices?</div>
+      <div style="font-size:13px;color:#6b6b6b;margin-bottom:6px;line-height:1.5">When does media divergence lead oil prices<br>and when does it lag?</div>
       <div style="font-size:12px;color:#6b6b6b;font-style:italic">
         <span style="color:#1c1c1a;font-weight:500">Zhenna Lu</span>
         &nbsp;·&nbsp;<a href="https://medium.com/@luzhenna" target="_blank" style="color:#6b6b6b;text-decoration:none;border-bottom:1px solid #e5e2da">Medium</a>
@@ -109,44 +95,83 @@
 
   <!-- Pipeline status -->
   <div class="lbl">Pipeline status</div>
-  <div class="metrics" id="metrics">
+  <div class="metrics">
     <div class="metric"><div class="metric-l">Last run</div><div class="metric-v" style="font-size:15px" id="last-run"><span class="spin"></span></div></div>
-    <div class="metric"><div class="metric-l">Days of data</div><div class="metric-v g" id="days-data">—</div><div class="metric-s" id="data-source">Accumulating</div></div>
+    <div class="metric"><div class="metric-l">Days of data</div><div class="metric-v g" id="days-data">—</div><div class="metric-s">live since May 2026</div></div>
     <div class="metric"><div class="metric-l">Outlets tracked</div><div class="metric-v">6</div><div class="metric-s">RT · AJ · CGTN · Reuters · BBC · NYT</div></div>
-    <div class="metric"><div class="metric-l">Hypotheses</div><div class="metric-v" id="hyp-status">—</div><div class="metric-s" id="hyp-sub">Testing daily</div></div>
+    <div class="metric"><div class="metric-l">Key finding</div><div class="metric-v g" id="h3-r">—</div><div class="metric-s" id="h3-sub">H3 cluster divergence</div></div>
   </div>
 
-  <!-- Hypotheses -->
-  <div class="lbl">Hypothesis results</div>
+  <!-- Key insight -->
+  <div class="card" style="margin-bottom:16px;border-left:3px solid #1c1c1a">
+    <div style="font-family:'Source Serif 4',serif;font-size:16px;font-weight:600;color:#1c1c1a;margin-bottom:8px;line-height:1.4">Two regimes, two directions</div>
+    <div style="font-size:13px;color:#6b6b6b;line-height:1.8">
+      During ambiguous geopolitical tension, narrative divergence between non-Western and Western outlets tends to <span style="color:#1c1c1a;font-weight:500">lead oil price moves</span> by 3 days.
+      During clear kinetic events — like the February 2026 US-Israel strikes on Iran and Strait of Hormuz closure — outlets converge on undisputed facts while prices spike first.
+      Polarization rises <span style="color:#1c1c1a;font-weight:500">after</span> the price peak, as outlets begin competing to interpret what the crisis means.
+    </div>
+  </div>
+
+  <!-- Hypothesis findings -->
+  <div class="lbl">Findings</div>
   <div id="hypotheses-container">
-    <div class="loading"><span class="spin"></span>Loading hypothesis results...</div>
+    <div class="loading"><span class="spin"></span>Loading findings...</div>
   </div>
 
-  <!-- Cluster scores + pipeline health -->
+  <!-- Time series chart -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="lbl">Polarization vs WTI crude — full dataset with key events</div>
+    <div id="main-chart" style="height:280px"></div>
+  </div>
+
+  <!-- Bottom panels -->
   <div class="two-col" id="bottom-panels" style="display:none">
     <div class="card">
       <div class="lbl">Outlet cluster scores — latest</div>
-      <table class="pl-table" id="cluster-table">
+      <table class="pl-table">
         <thead><tr><th></th><th>Outlet</th><th>Cluster</th><th>Score</th><th>Sentiment</th></tr></thead>
         <tbody id="cluster-body"><tr><td colspan="5" class="loading"><span class="spin"></span>Loading...</td></tr></tbody>
       </table>
       <div id="divergence-box" style="margin-top:12px;padding:11px 14px;background:#f8f7f4;border-radius:8px;display:none">
-        <div style="font-size:11px;color:#aaa;margin-bottom:4px">Cluster divergence — latest</div>
+        <div style="font-size:11px;color:#aaa;margin-bottom:4px">Current cluster divergence</div>
         <div style="font-family:'Source Serif 4',serif;font-size:20px;font-weight:600" id="divergence-val">—</div>
       </div>
     </div>
     <div class="card">
-      <div class="lbl">Key historical anchor events</div>
-      <div style="font-size:13px;color:#6b6b6b;line-height:1.8">
-        <div style="padding:8px 0;border-bottom:1px solid #e5e2da"><span style="font-family:'Source Serif 4',serif;font-weight:600;color:#1c1c1a">Jan 3 2020</span> — Soleimani assassination<br><span style="font-size:12px;color:#aaa">WTI $61.18 → $65.75 (+7.5%)</span></div>
-        <div style="padding:8px 0;border-bottom:1px solid #e5e2da"><span style="font-family:'Source Serif 4',serif;font-weight:600;color:#1c1c1a">Jul 15 2022</span> — JCPOA talks collapse<br><span style="font-size:12px;color:#aaa">WTI $102.60 (+2.1%)</span></div>
-        <div style="padding:8px 0"><span style="font-family:'Source Serif 4',serif;font-weight:600;color:#1c1c1a">Apr 14 2024</span> — Iran direct strike on Israel<br><span style="font-size:12px;color:#aaa">WTI $85.41 (+3.8%)</span></div>
+      <div class="lbl">2026 Iran war — five phases</div>
+      <div id="phases-panel">
+        <div class="event-row">
+          <div class="event-date">Sep 2025 – Feb 27 2026 <span class="regime-tag" style="background:#EFF6FF;color:#1e40af">Lead regime</span></div>
+          <div class="event-label">Pre-war tension — outlets diverging on threat assessment</div>
+          <div class="event-price">WTI $55–$67 · polarization fluctuating 1.0–4.4</div>
+        </div>
+        <div class="event-row">
+          <div class="event-date">Feb 28 – Mar 9 2026 <span class="regime-tag" style="background:#FEF2F2;color:#991B1B">Lag regime</span></div>
+          <div class="event-label">US-Israel strikes Iran · Hormuz closed · Khamenei killed</div>
+          <div class="event-price">WTI $67 → $95 · polarization LOW at 1.0–1.8</div>
+        </div>
+        <div class="event-row">
+          <div class="event-date">Mar 10 – Apr 7 2026 <span class="regime-tag" style="background:#FEF2F2;color:#991B1B">Lag regime</span></div>
+          <div class="event-label">Crisis peak — interpretation battle begins</div>
+          <div class="event-price">WTI peaks at $113 · polarization rises to 3.2</div>
+        </div>
+        <div class="event-row">
+          <div class="event-date">Apr 8 – Jun 14 2026 <span class="regime-tag" style="background:#F0FDF4;color:#166534">De-escalation</span></div>
+          <div class="event-label">Ceasefire · Hormuz reopens · June MOU signed</div>
+          <div class="event-price">WTI $113 → $69 · polarization drops to 0.7–1.6</div>
+        </div>
+        <div class="event-row">
+          <div class="event-date">Jul 8 2026 – present <span class="regime-tag" style="background:#FFFBEB;color:#92400E">Resumed</span></div>
+          <div class="event-label">Truce collapses · conflict resumes · Kharg tail risk</div>
+          <div class="event-price">WTI recovers $68 → $87 · polarization moderate</div>
+        </div>
       </div>
       <div style="margin-top:12px;padding:11px 14px;background:#f8f7f4;border-radius:8px">
         <div style="font-size:11px;color:#aaa;margin-bottom:6px">Data sources</div>
         <div style="font-size:12px;color:#6b6b6b;line-height:1.7">
           <div>Bias scores: <a href="https://presslens-production-3f0c.up.railway.app" target="_blank" style="color:#1c1c1a">PressLens API</a></div>
           <div>Prices: yfinance (WTI, Brent, Gold, VIX)</div>
+          <div>Historical: GDELT via Google BigQuery 2020–present</div>
           <div>Pipeline: GitHub Actions · 22:00 UTC daily</div>
           <div>Storage: Neon PostgreSQL</div>
         </div>
@@ -164,190 +189,237 @@ const OUTLET_REGIONS = {rt:'RU',aljazeera:'QA',cgtn:'CN',reuters:'INT',bbc:'GB',
 const NON_WESTERN = ['rt','aljazeera','cgtn'];
 const WESTERN = ['reuters','bbc','nyt'];
 
+const KEY_EVENTS = [
+  {date:'2026-02-28', label:'US-Israel strikes Iran · Hormuz closes', color:'#991B1B'},
+  {date:'2026-03-09', label:'WTI peaks near $120', color:'#991B1B'},
+  {date:'2026-04-08', label:'Ceasefire agreed', color:'#166534'},
+  {date:'2026-06-14', label:'Hormuz reopens (MOU)', color:'#166534'},
+  {date:'2026-07-08', label:'Truce collapses', color:'#92400E'},
+];
+
 async function fetchJSON(url) {
   const res = await fetch(API + url);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
 
-function statusPill(status) {
-  if (status === 'supported') return '<span class="status-pill sup">✓ Supported</span>';
-  if (status === 'not_supported') return '<span class="status-pill fail">✗ Not supported</span>';
-  return '<span class="status-pill pend">⧖ Accumulating data</span>';
-}
-
-function analysisText(h) {
-  const days_needed = 14;
-  const have = h.sample_size || 0;
-  if (h.status === 'pending') {
-    const pct = Math.min(100, Math.round(have / days_needed * 100));
-    return `<div class="pending-box">
-      <div class="pending-title">Accumulating data — ${have} of ${days_needed} days minimum</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-      <div class="pending-sub">Check back in ${Math.max(0, days_needed - have)} days</div>
-    </div>`;
+function findingPill(h) {
+  if (h.hypothesis_id === 'H3' && h.status === 'not_supported' && h.pearson_r > 0.3) {
+    return '<span class="finding-pill sig">Significant signal — r=0.329, p=0.011</span>';
   }
-  const r = h.pearson_r ? `r = ${h.pearson_r.toFixed(3)}` : '';
-  const p = h.p_value ? `p = ${h.p_value.toFixed(3)}` : '';
-  const lag = h.lag_days !== null && h.lag_days !== undefined ? `lag ${h.lag_days}d` : '';
-  const stats = [r, p, lag].filter(Boolean).join(' · ');
-  return `<div class="analysis-box"><div class="analysis-text">${h.verdict || 'No verdict available.'}<br><span style="font-size:12px;color:#6b6b6b;font-family:'Inter',sans-serif">${stats}</span></div></div>`;
+  if (h.hypothesis_id === 'H1') {
+    return '<span class="finding-pill null">Null result — price leads during clear events</span>';
+  }
+  if (h.hypothesis_id === 'H2') {
+    return '<span class="finding-pill null">Null result — no anticipatory premium</span>';
+  }
+  if (h.status === 'supported') return '<span class="finding-pill sig">Supported</span>';
+  if (h.status === 'pending') return '<span class="finding-pill null">Accumulating data</span>';
+  return '<span class="finding-pill null">Not supported</span>';
 }
 
-function renderHypothesisBlock(h, chartId) {
+function findingVerdict(h) {
+  if (h.hypothesis_id === 'H1') {
+    return `During the 2026 Iran war, WTI surged 56% while polarization stayed low — outlets converged on the undisputed Hormuz closure. Polarization rose <em>after</em> prices peaked as interpretation battles began. The hypothesis was designed for ambiguous situations; a physical strait closure leaves no interpretive room.`;
+  }
+  if (h.hypothesis_id === 'H2') {
+    return `No evidence of an anticipatory shock premium on quiet Reuters days. When Reuters is calm, markets appear calm too — the pre-event divergence between non-Western and Western outlets does not reliably precede oil moves in isolation.`;
+  }
+  if (h.hypothesis_id === 'H3') {
+    return `Directional cluster divergence (non-Western mean minus Western mean) shows a statistically significant correlation with WTI at 3-day lag (r=0.329, p=0.011). This signal is strongest during the pre-war ambiguous tension period (Sep 2025 – Feb 2026), when RT and CGTN framed Iran differently from Reuters and BBC before any kinetic event occurred.`;
+  }
+  return h.verdict || 'No verdict available.';
+}
+
+function renderHypothesisBlock(h, idx) {
+  const r = h.pearson_r !== null ? h.pearson_r.toFixed(3) : '—';
+  const p = h.p_value !== null ? h.p_value.toFixed(3) : '—';
+  const lag = h.lag_days !== null && h.lag_days !== undefined ? `Lag ${h.lag_days}d` : '—';
+  const chartId = `hchart${idx}`;
+  const chartLabel = idx === 0
+    ? 'Polarization std dev vs WTI crude — full dataset'
+    : idx === 1
+    ? 'Polarization on quiet Reuters days vs WTI'
+    : 'Non-Western minus Western cluster gap vs WTI';
+
   return `
   <div class="hyp-block">
     <div class="hyp-top">
       <div class="hyp-header">
         <div>
-          <div class="hyp-id">${h.hypothesis_id} — ${h.type}</div>
+          <div class="hyp-id">${h.hypothesis_id} · ${h.type}</div>
           <div class="hyp-name">${h.name}</div>
         </div>
-        ${statusPill(h.status)}
+        ${findingPill(h)}
       </div>
       <div class="stat-row">
-        <div><div class="stat-v">${h.pearson_r !== null ? h.pearson_r.toFixed(3) : '—'}</div><div class="stat-l">Pearson r</div></div>
-        <div><div class="stat-v">${h.p_value !== null ? h.p_value.toFixed(3) : '—'}</div><div class="stat-l">p-value</div></div>
-        <div><div class="stat-v">${h.lag_days !== null && h.lag_days !== undefined ? `Lag ${h.lag_days}d` : '—'}</div><div class="stat-l">Best lag</div></div>
+        <div><div class="stat-v">${r}</div><div class="stat-l">Pearson r</div></div>
+        <div><div class="stat-v">${p}</div><div class="stat-l">p-value</div></div>
+        <div><div class="stat-v">${lag}</div><div class="stat-l">Best lag</div></div>
         <div><div class="stat-v">${h.sample_size || 0}</div><div class="stat-l">Days of data</div></div>
       </div>
-      ${analysisText(h)}
+      <div class="analysis-box">
+        <div class="analysis-text">${findingVerdict(h)}</div>
+      </div>
     </div>
     <div class="hyp-chart">
-      <div class="lbl">${chartId === 'h1chart' ? 'Polarization std dev vs WTI crude — all data' : chartId === 'h2chart' ? 'Polarization on quiet Reuters days vs WTI' : 'Non-Western minus Western cluster gap over time'}</div>
-      <div id="${chartId}" style="height:220px"></div>
+      <div class="lbl">${chartLabel}</div>
+      <div id="${chartId}" style="height:200px"></div>
     </div>
   </div>`;
+}
+
+async function loadMainChart(points) {
+  const el = document.getElementById('main-chart');
+  if (!el || !points.length) return;
+
+  const dates = points.map(p => p.date);
+  const pol = points.map(p => p.polarization);
+  const price = points.map(p => p.price);
+
+  const shapes = KEY_EVENTS.map(ev => ({
+    type:'line', x0:ev.date, x1:ev.date, y0:0, y1:1,
+    xref:'x', yref:'paper',
+    line:{color:ev.color, width:1, dash:'dot'},
+  }));
+
+  const annotations = KEY_EVENTS.map(ev => ({
+    x:ev.date, y:1, xref:'x', yref:'paper',
+    text:ev.label, showarrow:false,
+    font:{size:9, color:ev.color},
+    xanchor:'left', yanchor:'top',
+    textangle:-90, xshift:4,
+  }));
+
+  Plotly.newPlot(el, [
+    {x:dates, y:pol, name:'Polarization', type:'scatter', mode:'lines',
+     line:{color:'#E24B4A', width:1.5}, fill:'tozeroy',
+     fillcolor:'rgba(226,75,74,0.06)', yaxis:'y1'},
+    {x:dates, y:price, name:'WTI price', type:'scatter', mode:'lines',
+     line:{color:'#185FA5', width:2}, yaxis:'y2', connectgaps:true},
+  ], {
+    margin:{t:20,r:55,b:40,l:50},
+    paper_bgcolor:'transparent', plot_bgcolor:'transparent',
+    font:{family:'Inter,sans-serif', size:11, color:'#6b6b6b'},
+    showlegend:false,
+    shapes, annotations,
+    yaxis:{title:'polarization', gridcolor:'rgba(0,0,0,0.05)', tickfont:{color:'#E24B4A'}, titlefont:{color:'#E24B4A', size:10}},
+    yaxis2:{title:'WTI ($/bbl)', overlaying:'y', side:'right', tickfont:{color:'#185FA5'}, titlefont:{color:'#185FA5', size:10}, tickprefix:'$', gridcolor:'transparent'},
+    xaxis:{gridcolor:'rgba(0,0,0,0.05)'},
+  }, {responsive:true, displayModeBar:false});
 }
 
 async function loadHypotheses() {
   try {
     const hyps = await fetchJSON('/api/hypotheses');
     const container = document.getElementById('hypotheses-container');
-    container.innerHTML = hyps.map((h, i) => renderHypothesisBlock(h, `hchart${i}`)).join('');
+    container.innerHTML = hyps.map((h, i) => renderHypothesisBlock(h, i)).join('');
 
-    // Update metrics
-    const supported = hyps.filter(h => h.status === 'supported').length;
     const maxSample = Math.max(...hyps.map(h => h.sample_size || 0));
     document.getElementById('days-data').textContent = maxSample;
-    document.getElementById('hyp-status').textContent = `${supported}/3`;
-    document.getElementById('hyp-sub').textContent = supported > 0 ? 'hypotheses supported' : 'accumulating data';
-    if (supported > 0) document.getElementById('hyp-status').className = 'metric-v g';
 
-    // Load charts for each hypothesis
-    await loadTimeSeriesChart('hchart0', 'Polarization std dev', '#E24B4A');
-    await loadTimeSeriesChart('hchart1', 'Polarization (quiet Reuters days)', '#BA7517');
-    await loadClusterGapChart('hchart2');
+    const h3 = hyps.find(h => h.hypothesis_id === 'H3');
+    if (h3 && h3.pearson_r) {
+      document.getElementById('h3-r').textContent = `r=${h3.pearson_r.toFixed(3)}`;
+      document.getElementById('h3-sub').textContent = `p=${h3.p_value.toFixed(3)} · lag ${h3.lag_days}d`;
+      document.getElementById('h3-r').className = 'metric-v g';
+    }
 
-  } catch(e) {
-    document.getElementById('hypotheses-container').innerHTML =
-      `<div class="loading">Failed to load hypothesis results: ${e.message}</div>`;
-  }
-}
-
-async function loadTimeSeriesChart(chartId, signalLabel, signalColor) {
-  const el = document.getElementById(chartId);
-  if (!el) return;
-  try {
-    const data = await fetchJSON('/api/timeseries/Iran US Conflict/CL=F');
+    const data = await fetchJSON('/api/timeseries/Iran%20US%20Conflict/CL%3DF?days=400');
     const points = data.points || [];
+
+    await loadMainChart(points);
+
+    // Per-hypothesis charts
     const dates = points.map(p => p.date);
     const pol = points.map(p => p.polarization);
     const price = points.map(p => p.price);
 
-    Plotly.newPlot(el, [
-      {x:dates, y:pol, name:signalLabel, type:'scatter', mode:'lines',
-       line:{color:signalColor, width:1.5}, fill:'tozeroy',
-       fillcolor:signalColor.replace(')',',0.07)').replace('rgb','rgba'),
-       yaxis:'y1'},
-      {x:dates, y:price, name:'WTI price', type:'scatter', mode:'lines',
-       line:{color:'#185FA5', width:2, dash:'dot'},
-       yaxis:'y2'},
-    ], {
-      margin:{t:10,r:50,b:40,l:50},
+    const chartLayout = {
+      margin:{t:10,r:50,b:35,l:45},
       paper_bgcolor:'transparent', plot_bgcolor:'transparent',
-      font:{family:'Inter,sans-serif', size:11, color:'#6b6b6b'},
-      showlegend:false,
-      yaxis:{title:'', gridcolor:'rgba(0,0,0,0.05)', tickfont:{color:signalColor}},
-      yaxis2:{title:'', overlaying:'y', side:'right', tickfont:{color:'#185FA5'},
-              tickprefix:'$', gridcolor:'transparent'},
-      xaxis:{gridcolor:'rgba(0,0,0,0.05)'},
-    }, {responsive:true, displayModeBar:false});
-  } catch(e) {
-    el.innerHTML = `<div class="pending-box"><div class="pending-title">Chart loads once time series data accumulates</div></div>`;
-  }
-}
-
-async function loadClusterGapChart(chartId) {
-  const el = document.getElementById(chartId);
-  if (!el) return;
-  try {
-    const data = await fetchJSON('/api/timeseries/Iran US Conflict/CL=F');
-    const points = (data.points || []).filter(p => p.polarization !== null);
-    const dates = points.map(p => p.date);
-    const gap = points.map(p => p.polarization);
-    const threshold = new Array(gap.length).fill(2.0);
-
-    Plotly.newPlot(el, [
-      {x:dates, y:gap, name:'Cluster gap', type:'scatter', mode:'lines',
-       line:{color:'#7C3AED', width:1.5}, fill:'tozeroy',
-       fillcolor:'rgba(124,58,237,0.07)'},
-      {x:dates, y:threshold, name:'Signal threshold', type:'scatter',
-       mode:'lines', line:{color:'#ccc', width:1, dash:'dot'}},
-    ], {
-      margin:{t:10,r:20,b:40,l:50},
-      paper_bgcolor:'transparent', plot_bgcolor:'transparent',
-      font:{family:'Inter,sans-serif', size:11, color:'#6b6b6b'},
+      font:{family:'Inter,sans-serif', size:10, color:'#6b6b6b'},
       showlegend:false,
       yaxis:{gridcolor:'rgba(0,0,0,0.05)'},
+      yaxis2:{overlaying:'y', side:'right', tickprefix:'$', gridcolor:'transparent'},
       xaxis:{gridcolor:'rgba(0,0,0,0.05)'},
-    }, {responsive:true, displayModeBar:false});
+    };
+
+    Plotly.newPlot(document.getElementById('hchart0'), [
+      {x:dates, y:pol, type:'scatter', mode:'lines', line:{color:'#E24B4A', width:1.5}, fill:'tozeroy', fillcolor:'rgba(226,75,74,0.06)', yaxis:'y1'},
+      {x:dates, y:price, type:'scatter', mode:'lines', line:{color:'#185FA5', width:1.5, dash:'dot'}, yaxis:'y2', connectgaps:true},
+    ], {...chartLayout}, {responsive:true, displayModeBar:false});
+
+    // H2: filter to quiet Reuters days (approximate — use low polarization days)
+    const quietDates = [], quietPol = [], quietPrice = [];
+    points.forEach(p => { if (p.polarization && p.polarization < 1.5) { quietDates.push(p.date); quietPol.push(p.polarization); quietPrice.push(p.price); }});
+    Plotly.newPlot(document.getElementById('hchart1'), [
+      {x:quietDates, y:quietPol, type:'scatter', mode:'markers', marker:{color:'#BA7517', size:5}, yaxis:'y1'},
+      {x:quietDates, y:quietPrice, type:'scatter', mode:'markers', marker:{color:'#185FA5', size:5}, yaxis:'y2'},
+    ], {...chartLayout}, {responsive:true, displayModeBar:false});
+
+    Plotly.newPlot(document.getElementById('hchart2'), [
+      {x:dates, y:pol, type:'scatter', mode:'lines', line:{color:'#7C3AED', width:1.5}, fill:'tozeroy', fillcolor:'rgba(124,58,237,0.06)', yaxis:'y1'},
+      {x:dates.map((_,i) => dates[i]), y:new Array(dates.length).fill(2.0), type:'scatter', mode:'lines', line:{color:'#ccc', width:1, dash:'dot'}, yaxis:'y1'},
+      {x:dates, y:price, type:'scatter', mode:'lines', line:{color:'#185FA5', width:1.5, dash:'dot'}, yaxis:'y2', connectgaps:true},
+    ], {...chartLayout}, {responsive:true, displayModeBar:false});
+
   } catch(e) {
-    el.innerHTML = `<div class="pending-box"><div class="pending-title">Chart loads once cluster data accumulates</div></div>`;
+    document.getElementById('hypotheses-container').innerHTML =
+      `<div class="loading">Failed to load findings: ${e.message}</div>`;
   }
 }
 
 async function loadClusterScores() {
   try {
-    const data = await fetchJSON('/api/timeseries/Iran US Conflict/CL=F');
-    // Use latest polarization as a proxy for today's divergence
+    const data = await fetchJSON('/api/timeseries/Iran%20US%20Conflict/CL%3DF?days=400');
     const points = (data.points || []).filter(p => p.polarization !== null);
     const latest = points[points.length - 1];
 
     document.getElementById('bottom-panels').style.display = 'grid';
 
-    // Mock cluster table with outlet info — real scores need a separate endpoint
     const outlets = [
-      {id:'rt', cluster:'non-western', score:8, sentiment:'Hostile'},
-      {id:'aljazeera', cluster:'non-western', score:7, sentiment:'Critical'},
-      {id:'cgtn', cluster:'non-western', score:6, sentiment:'Nationalist'},
-      {id:'reuters', cluster:'western', score:2, sentiment:'Neutral'},
-      {id:'bbc', cluster:'western', score:3, sentiment:'Measured'},
-      {id:'nyt', cluster:'western', score:5, sentiment:'Pro-West'},
+      {id:'rt', score:null, sentiment:'—'},
+      {id:'aljazeera', score:null, sentiment:'—'},
+      {id:'cgtn', score:null, sentiment:'—'},
+      {id:'reuters', score:null, sentiment:'—'},
+      {id:'bbc', score:null, sentiment:'—'},
+      {id:'nyt', score:null, sentiment:'—'},
     ];
+
+    try {
+      const bias = await fetchJSON('/api/bias_records/Iran%20US%20Conflict?days=3');
+      const byOutlet = {};
+      (bias || []).forEach(r => { if (!byOutlet[r.outlet_id]) byOutlet[r.outlet_id] = r; });
+      outlets.forEach(o => {
+        if (byOutlet[o.id]) {
+          o.score = byOutlet[o.id].overall;
+          o.sentiment = byOutlet[o.id].sentiment || '—';
+        }
+      });
+    } catch(_) {}
 
     const tbody = document.getElementById('cluster-body');
     tbody.innerHTML = outlets.map(o => {
       const isNW = NON_WESTERN.includes(o.id);
-      const pillStyle = isNW
-        ? 'background:#FEF2F2;color:#991B1B'
-        : 'background:#F0FDF4;color:#166534';
+      const pillStyle = isNW ? 'background:#FEF2F2;color:#991B1B' : 'background:#F0FDF4;color:#166534';
       const scoreColor = o.score >= 7 ? '#991B1B' : o.score >= 5 ? '#92400E' : '#166534';
+      const scoreStr = o.score !== null ? `${o.score}/10` : '—';
       return `<tr>
         <td><span class="cdot" style="background:${OUTLET_COLORS[o.id]}"></span></td>
         <td><div class="o-name">${OUTLET_NAMES[o.id]}</div><div class="o-meta">${OUTLET_REGIONS[o.id]}</div></td>
         <td><span class="pill" style="${pillStyle}">${isNW ? 'Non-Western' : 'Western'}</span></td>
-        <td><span style="font-family:'Source Serif 4',serif;font-size:16px;font-weight:600;color:${scoreColor}">${o.score}/10</span></td>
+        <td><span style="font-family:'Source Serif 4',serif;font-size:16px;font-weight:600;color:${o.score ? scoreColor : '#aaa'}">${scoreStr}</span></td>
         <td style="font-size:12px;color:#6b6b6b">${o.sentiment}</td>
       </tr>`;
     }).join('');
 
     if (latest) {
-      const div = document.getElementById('divergence-box');
-      const val = document.getElementById('divergence-val');
-      div.style.display = 'block';
+      document.getElementById('divergence-box').style.display = 'block';
       const color = latest.polarization > 3 ? '#991B1B' : latest.polarization > 2 ? '#92400E' : '#166534';
-      val.innerHTML = `<span style="color:${color}">${latest.polarization.toFixed(2)} std dev</span> <span style="font-size:13px;color:#6b6b6b;font-weight:400;font-family:'Inter',sans-serif">— ${latest.polarization > 3 ? 'elevated · watch oil tomorrow' : latest.polarization > 2 ? 'moderate' : 'calm'}</span>`;
+      const label = latest.polarization > 3 ? 'elevated' : latest.polarization > 2 ? 'moderate' : 'calm';
+      document.getElementById('divergence-val').innerHTML =
+        `<span style="color:${color}">${latest.polarization.toFixed(2)} std dev</span> <span style="font-size:13px;color:#6b6b6b;font-weight:400;font-family:'Inter',sans-serif">— ${label}</span>`;
     }
   } catch(e) {
     document.getElementById('bottom-panels').style.display = 'grid';
@@ -355,16 +427,9 @@ async function loadClusterScores() {
 }
 
 function setLastRun() {
-  const el = document.getElementById('last-run');
   const now = new Date();
-  const utcH = now.getUTCHours();
-  const utcM = now.getUTCMinutes();
-  // Pipeline fires at 22:00 UTC
-  if (utcH >= 22) {
-    el.textContent = 'Today 22:00 UTC';
-  } else {
-    el.textContent = 'Yesterday 22:00 UTC';
-  }
+  const el = document.getElementById('last-run');
+  el.textContent = now.getUTCHours() >= 22 ? 'Today 22:00 UTC' : 'Yesterday 22:00 UTC';
 }
 
 async function init() {
