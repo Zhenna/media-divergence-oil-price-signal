@@ -48,6 +48,17 @@ cp .env.example .env    # fill in your keys for local development
 
 ---
 
+## Step 2b — Compute historical polarization (after GDELT backfill)
+
+```bash
+python scripts/backfill_polarization.py
+# Reads all GDELT bias snapshots → computes daily std dev → stores in polarization_scores
+# Expected: 7,000+ polarization records stored
+# Run once — the daily pipeline handles polarization going forward
+```
+
+---
+
 ## Step 3 — Run historical price backfill locally
 
 ```bash

@@ -139,7 +139,7 @@ HYPOTHESES = {
         "market": "CL=F",
         "lag_days": [0, 1, 2],
         "reuters_threshold": 3,
-        "significance_threshold": settings.exploratory_significance_threshold,
+        "significance_threshold": settings.significance_threshold,
         "rationale": (
             "The Reuters calm condition isolates the anticipatory signal from "
             "reactions to actual events. If oil moves when Reuters is calm, "
@@ -159,7 +159,7 @@ HYPOTHESES = {
         "topics": ["Iran US Conflict"],
         "market": "CL=F",
         "lag_days": [0, 1, 2, 3],
-        "significance_threshold": settings.exploratory_significance_threshold,
+        "significance_threshold": settings.significance_threshold,
         "rationale": (
             "Directional divergence (non-Western higher than Western) is a "
             "different signal from raw spread. A situation where RT is alarmed "
