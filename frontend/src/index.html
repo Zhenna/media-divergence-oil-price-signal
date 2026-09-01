@@ -201,7 +201,7 @@
     <div class="card" style="margin-bottom:0">
       <div class="lbl">Outlet cluster scores — latest</div>
       <table class="pl-table">
-        <thead><tr><th></th><th>Outlet</th><th>Cluster</th><th>Score</th></tr></thead>
+        <thead><tr><th>Outlet</th><th>Score</th><th>Sentiment</th></tr></thead>
         <tbody id="cluster-body">
           <tr><td colspan="4" class="loading"><span class="spin"></span>Loading...</td></tr>
         </tbody>
@@ -369,22 +369,37 @@ async function loadClusterScores() {
     ];
 
     try {
-      const bias = await fetchJSON('/api/bias_records/Iran%20US%20Conflict?days=3');
+      const bias = await fetchJSON('/api/bias_records/Iran%20US%20Conflict?days=7');
       const byOutlet = {};
       (bias || []).forEach(r => { if (!byOutlet[r.outlet_id]) byOutlet[r.outlet_id] = r; });
-      outlets.forEach(o => { if (byOutlet[o.id]) { o.score = byOutlet[o.id].overall; o.sentiment = byOutlet[o.id].sentiment; } });
+      outlets.forEach(o => {
+        if (byOutlet[o.id]) {
+          o.score = byOutlet[o.id].overall;
+          o.sentiment = byOutlet[o.id].sentiment;
+          o.verdict = byOutlet[o.id].verdict;
+        }
+      });
     } catch(_) {}
 
     const tbody = document.getElementById('cluster-body');
     tbody.innerHTML = outlets.map(o => {
       const isNW = NON_WESTERN.includes(o.id);
-      const pillStyle = isNW ? 'background:#FEF2F2;color:#991B1B' : 'background:#F0FDF4;color:#166534';
+      const clusterLabel = isNW ? 'Non-Western' : 'Western';
       const scoreColor = o.score >= 7 ? '#991B1B' : o.score >= 5 ? '#92400E' : '#166534';
+      const sentimentText = o.sentiment || '—';
+      const verdictText = o.verdict ? o.verdict.slice(0, 80) + (o.verdict.length > 80 ? '…' : '') : '—';
       return `<tr>
-        <td><span class="cdot" style="background:${OUTLET_COLORS[o.id]}"></span></td>
-        <td><div class="o-name">${OUTLET_NAMES[o.id]}</div><div class="o-meta">${OUTLET_REGIONS[o.id]}</div></td>
-        <td><span class="cpill" style="${pillStyle}">${isNW ? 'Non-Western' : 'Western'}</span></td>
-        <td><span style="font-family:'Source Serif 4',serif;font-size:15px;font-weight:600;color:${o.score ? scoreColor : '#aaa'}">${o.score ? o.score+'/10' : '—'}</span></td>
+        <td>
+          <div class="o-name">${OUTLET_NAMES[o.id]}</div>
+          <div class="o-meta" style="color:#ccc;font-size:10px;margin-top:1px">${clusterLabel}</div>
+        </td>
+        <td>
+          <span style="font-family:'Source Serif 4',serif;font-size:15px;font-weight:600;color:${o.score ? scoreColor : '#aaa'}">${o.score ? o.score+'/10' : '—'}</span>
+        </td>
+        <td style="font-size:12px;color:#6b6b6b;line-height:1.5">
+          <div style="font-weight:500;color:#3a3a38;margin-bottom:2px">${sentimentText}</div>
+          <div style="color:#aaa">${verdictText}</div>
+        </td>
       </tr>`;
     }).join('');
 
