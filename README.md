@@ -1,66 +1,18 @@
 # media-divergence-oil-price-signal
 
-> When RT and Al Jazeera tell a different story from Reuters and BBC, does oil move? A data pipeline that measures narrative divergence across global press and correlates it with WTI crude prices — daily, automated, statistically tested.
+> Does narrative divergence between non-Western and Western outlets track oil price movements after a geopolitical shock? Six months of automated LLM scoring across RT, Al Jazeera, CGTN, Reuters, BBC and NY Times — tested against WTI crude during the 2026 Iran war.
 
-**Live demo:** [media-divergence-oil-price-signal-production.up.railway.app](https://media-divergence-oil-price-signal-production.up.railway.app/)
-**Built on top of:** [PressLens](https://github.com/zhenna/presslens-media-bias-analyzer) — no LLM code duplicated.
-
----
-
-## The hypothesis
-
-Traditional financial NLP measures sentiment — how negative is a given source?
-
-This project measures **polarization** — how far apart are sources from each other?
-
-```
-Sentiment:    RT scores 8/10 negative        ← expected, not surprising
-Polarization: RT=8, Reuters=2, std_dev=3.4   ← unusual divergence = signal?
-```
-
-When outlets converge, the situation is understood.
-When outlets diverge sharply, the situation is contested — and contested
-geopolitical situations drive oil market uncertainty.
+**Live dashboard:** [media-divergence-oil-price-signal-production.up.railway.app](https://media-divergence-oil-price-signal-production.up.railway.app)
+**Blog post:** [Iran, Oil, and the Narrative Gap](BLOG_URL_PLACEHOLDER)
+**Built on top of:** [PressLens](https://github.com/zhenna/presslens-media-bias-analyzer) — LLM-based media bias scorer
 
 ---
 
-## Results
+## Finding
 
-*Accumulating data — results published after 90 days.*
+The biggest oil spike in forty years happened while media polarization was at its lowest — all six outlets converged on the same undisputed fact (Hormuz closure). After the shock, the directional gap between non-Western and Western outlet clusters showed a statistically significant correlation with WTI at 3-day lag (r = 0.329, p = 0.011): when non-Western outlets stayed more alarmed than Western outlets after a ceasefire, oil prices remained elevated longer.
 
-Three hypotheses tested daily:
-
-**H1 — Confirmatory**
-Narrative polarization between non-Western (RT, Al Jazeera, CGTN) and Western
-(Reuters, BBC, NY Times) outlets predicts WTI crude oil price movement better
-than any single outlet's mean sentiment score.
-
-**H2 — Exploratory**
-WTI crude rises within 48 hours of a polarization spike even when Reuters
-scores below 3 — anticipated shock premium, not realized event response.
-
-**H3 — Exploratory**
-Directional cluster divergence (non-Western mean minus Western mean) is a
-stronger oil predictor than raw standard deviation alone.
-
----
-
-## What it tracks
-
-**Topic:** Iran US Conflict
-
-**Outlets — two clusters:**
-```
-Non-Western: RT (RU) · Al Jazeera (QA) · CGTN (CN)
-Western:     Reuters (INT) · BBC (GB) · NY Times (US)
-```
-
-**Markets:** WTI Crude Oil · Brent Crude · Gold · VIX
-
-**Key historical anchor events:**
-- Jan 3 2020 — Soleimani assassination ($63.27 → $65.75 WTI)
-- Jul 15 2022 — JCPOA talks collapse ($102.60 WTI)
-- Apr 14 2024 — Iran direct strike on Israel ($85.41 WTI)
+Kinetic events drive oil prices. Narrative divergence is a secondary signal that tracks how markets interpret what comes next. Full analysis in the [blog post](BLOG_URL_PLACEHOLDER).
 
 ---
 
@@ -68,54 +20,51 @@ Western:     Reuters (INT) · BBC (GB) · NY Times (US)
 
 ```
 Google BigQuery (one-time)
-    └── GDELT historical data 2020–present ──► Neon
+    └── GDELT historical Iran coverage 2020–present ──► Neon PostgreSQL
 
-GitHub Actions (daily at 22:00 UTC)
-    ├── pytest tests (gate — only runs if tests pass)
-    ├── PressLens API ──► bias scores ──────────► Neon
-    ├── yfinance ──────► WTI + Brent prices ───► Neon
-    ├── polarization engine (scipy) ────────────► Neon
-    └── hypothesis tests ──► MLflow (DagsHub) ──► Neon
+GitHub Actions (weekly at 22:00 UTC Monday)
+    ├── pytest gate — pipeline only runs if tests pass
+    ├── PressLens API ──► bias scores (6 outlets × 6 dimensions) ──► Neon
+    ├── yfinance ──────► WTI, Brent, Gold, VIX prices ───────────► Neon
+    ├── polarization engine ────────────────────────────────────► Neon
+    └── hypothesis tests ──► DagsHub MLflow ────────────────────► Neon
 
 Railway (always-on)
-    └── FastAPI + Plotly.js dashboard ──► reads Neon
+    └── FastAPI dashboard ──► reads Neon ──► Plotly.js annotated chart
 
 LangSmith
-    └── traces every PressLens API call
+    └── traces every PressLens API call (cost, latency, schema pass rate)
 ```
+
+---
+
+## Hypotheses tested
+
+Three hypotheses tested using Pearson correlation at lag 0–7 days. Significance threshold p < 0.05. Sample: 87 days live data + GDELT historical backfill.
+
+| | Hypothesis | r | p | Result |
+|---|---|---|---|---|
+| H1 | Polarization std dev predicts oil better than mean sentiment | 0.130 | 0.327 | Not supported |
+| H2 | Anticipated shock premium on quiet Reuters days | 0.081 | 0.538 | Not supported |
+| H3 | Directional cluster divergence (non-Western minus Western) | 0.329 | 0.011 | Significant |
+
+H1 and H2 being unsupported is itself informative — during undeniable physical events (Hormuz closure), all outlets converge and polarization collapses as a signal. See the [blog post](BLOG_URL_PLACEHOLDER) for the full interpretation.
 
 ---
 
 ## MLOps stack
 
-| Tool | Purpose | Why this tool |
-|---|---|---|
-| GitHub Actions | Daily pipeline + CI/CD | Tests gate every run; version-controlled |
-| Neon PostgreSQL | Time-series storage | Serverless, scales to zero |
-| LangSmith | LLM call tracing | Cost, latency, schema pass rate |
-| DagsHub MLflow | Experiment tracking | Every hypothesis test logged reproducibly |
-| Pydantic | Output validation | Schema enforcement before DB writes |
-| APScheduler | In-app scheduling | No Airflow overhead for one daily job |
+| Tool | Role |
+|---|---|
+| GitHub Actions | Weekly pipeline + CI/CD — tests gate every run |
+| Neon PostgreSQL | Single database shared by pipeline (writes) and dashboard (reads) |
+| PressLens API | LLM-based bias scoring — no scoring code duplicated here |
+| GDELT + BigQuery | Historical backfill — 6 years of Iran coverage |
+| DagsHub MLflow | Hypothesis test logging — every run is a reproducible experiment |
+| LangSmith | LLM call tracing — cost, latency, schema pass rate |
+| Railway | Always-on FastAPI dashboard |
 
-**Intentionally excluded:** Airflow (one pipeline), Kubernetes (single service),
-Kafka (one daily event), vector database (no semantic search needed),
-feature store (no model training).
-
----
-
-## Pipeline cadence
-
-**Phase 1 (first 90 days):** daily at 22:00 UTC
-**Phase 2 (90+ days):** weekly, every Monday 22:00 UTC
-
-To switch:
-```bash
-# Rename daily workflow
-git mv .github/workflows/daily_pipeline.yml .github/workflows/daily_pipeline.yml.disabled
-# Update cadence in railway.toml
-# PIPELINE_CADENCE = "weekly"
-git add . && git commit -m "switch to weekly pipeline" && git push
-```
+**Intentionally excluded:** Airflow (one pipeline), Kubernetes (single service), Kafka (one weekly event), feature store (no model training).
 
 ---
 
@@ -128,18 +77,16 @@ cd media-divergence-oil-price-signal
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-cp .env.example .env          # fill in your keys
+cp .env.example .env    # fill in your keys
 
-# One-time historical backfill
+# One-time historical price backfill
 python scripts/backfill_prices.py      # WTI + Brent 2020–present
 
 # Optional — GDELT historical news backfill (requires Google Cloud)
 # pip install google-cloud-bigquery
 # export GOOGLE_APPLICATION_CREDENTIALS="/path/to/key.json"
-# python scripts/backfill_gdelt.py    # Iran coverage 2020–present via BigQuery
-
-# After GDELT backfill — compute historical polarization scores
-python scripts/backfill_polarization.py
+# python scripts/backfill_gdelt.py
+# python scripts/backfill_polarization.py
 
 # Run locally
 uvicorn backend.main:app --reload
@@ -165,7 +112,7 @@ uvicorn backend.main:app --reload
 
 See [DEPLOY.md](DEPLOY.md) for full Railway deployment instructions.
 
-All secrets are managed via GitHub Actions secrets — no secrets in code.
+All secrets managed via GitHub Actions secrets — no secrets in code.
 
 ---
 
@@ -180,26 +127,17 @@ pytest tests/ -v
 
 ## Limitations
 
-**Correlation ≠ causation.** Both polarization and prices respond to the same
-underlying geopolitical events — not necessarily one causing the other.
-
-**GDELT vs PressLens scoring.** Historical analysis uses GDELT tone scores
-(dictionary-based). Live analysis uses PressLens 6-dimension LLM scoring.
-The two methods are compared for the overlapping period.
-
-**LLM Western training bias.** GPT-4o mini was trained on predominantly
-English-language Western text. RT and CGTN scores may be systematically
-inflated compared to a truly neutral baseline.
-
-**Sample size.** 90 days gives ~90 data points. Directionally meaningful,
-not publication-quality research.
+- Correlation not causation — multiple mechanisms plausible, indistinguishable with this dataset
+- One topic (Iran-US conflict), one commodity (WTI crude) — generalisability unknown
+- LLM scoring bias — GPT-4o mini trained predominantly on Western English text
+- GDELT historical data uses dictionary-based tone vs live LLM 6-dimension scoring
 
 ---
 
 ## Related
 
 - [PressLens](https://github.com/zhenna/presslens-media-bias-analyzer) — the bias scoring engine this project consumes
-- [Blog post](https://medium.com/@luzhenna) — technical writeup
+- [Blog post](BLOG_URL_PLACEHOLDER) — full analysis and findings
 
 ---
 
