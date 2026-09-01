@@ -50,9 +50,9 @@
     .regime-pill{font-size:10px;font-weight:500;padding:3px 9px;border-radius:100px;white-space:nowrap}
 
     /* Cluster table */
-    .pl-table{width:100%;border-collapse:collapse;font-size:13px}
+    .pl-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
     .pl-table th{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:#aaa;padding:6px 9px;text-align:left;border-bottom:1px solid #e5e2da}
-    .pl-table td{padding:9px 9px;border-bottom:1px solid #e5e2da;vertical-align:middle}
+    .pl-table td{padding:9px 9px;border-bottom:1px solid #e5e2da;vertical-align:top;word-wrap:break-word}
     .pl-table tr:last-child td{border-bottom:none}
     .o-name{font-family:'Source Serif 4',Georgia,serif;font-size:13px;font-weight:600;color:#1c1c1a}
     .o-meta{font-size:10px;color:#aaa}
@@ -161,7 +161,7 @@
   <div class="card">
     <div class="lbl">Outlet cluster scores — latest</div>
     <table class="pl-table">
-      <thead><tr><th>Outlet</th><th>Score</th><th>Sentiment</th></tr></thead>
+      <thead><tr><th style="width:160px">Outlet</th><th style="width:80px">Score</th><th>Sentiment</th></tr></thead>
       <tbody id="cluster-body">
         <tr><td colspan="3" class="loading"><span class="spin"></span>Loading...</td></tr>
       </tbody>
@@ -395,7 +395,7 @@ async function loadClusterScores() {
       const clusterLabel = isNW ? 'Non-Western' : 'Western';
       const scoreColor = o.score >= 7 ? '#991B1B' : o.score >= 5 ? '#92400E' : '#166534';
       const sentimentText = o.sentiment || '—';
-      const verdictText = o.verdict ? o.verdict.slice(0, 80) + (o.verdict.length > 80 ? '…' : '') : '—';
+      const verdictText = o.verdict || '—';
       return `<tr>
         <td>
           <div class="o-name">${OUTLET_NAMES[o.id]}</div>
